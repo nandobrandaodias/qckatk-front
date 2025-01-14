@@ -1,1 +1,33 @@
-/* You can add global styles to this file, and also import other style files */
+@import "primeicons/primeicons.css";
+@layer tailwind-base, primeng, tailwind-utilities;
+
+@layer tailwind-base {
+@tailwind base;
+}
+
+@layer tailwind-utilities {
+@tailwind components;
+@tailwind utilities;
+}
+
+
+body {
+    background-color: #ebe2d1;
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Poppins', sans-serif;
+}
+
+.btn, .btn-primary{
+    font-size: 1.3rem;
+    font-weight: 500;
+    color: white;
+    border-radius: 8px;
+    padding: 12px 16px;
+    background-color: #db8018;
+}
+
+.btn-primary:hover{
+    background-color: #db7a12;
+}
