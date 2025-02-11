@@ -1,0 +1,26 @@
+<p-dialog
+  header="Criar Novo Mundo"
+  [modal]="true"
+  [(visible)]="visible"
+  [style]="{ width: '25rem' }"
+  closable="false"
+>
+  <div class="mb-2">
+    <div class="flex flex-col gap-2">
+      <label for="nome">Nome</label>
+      <input pInputText id="nome" aria-describedby="nome-help" />
+    </div>
+  </div>
+
+  <div class="my-4">
+    <div class="flex flex-col gap-2">
+      <label for="descricao">Descrição</label>
+      <input pInputText id="descricao" aria-describedby="descricao-help" />
+    </div>
+  </div>
+
+  <div class="flex justify-end gap-2">
+    <p-button label="Cancelar" severity="secondary" (click)="close()" />
+    <p-button label="Criar" (click)="close()" />
+  </div>
+</p-dialog>
