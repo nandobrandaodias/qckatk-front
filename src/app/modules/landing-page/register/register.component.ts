@@ -15,9 +15,9 @@ export class RegisterComponent {
     startSignupForm(){
       this.signUpForm = new FormGroup({
         username: new FormControl('', [Validators.required, Validators.minLength(5)]),
-        email: new FormControl('', [Validators.required, Validators.minLength(5)]),
+        email: new FormControl('', [Validators.required, Validators.email]),
         password: new FormControl('', [Validators.required, Validators.minLength(5)]),
-        confirmpassword: new FormControl('', [Validators.required, Validators.minLength(5)]),
+        confirmpassword: new FormControl('', [Validators.required]),
       })
     }
   
