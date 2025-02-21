@@ -1,0 +1,20 @@
+<main>
+  <app-navbar />
+  <section class="mx-auto mt-16 w-10/12">
+    <div class="mb-8 pl-3">
+      <button pButton class="btn-primary" (click)="openWorldDialog()">
+        <span class="pi pi-plus"></span>
+        Novo Mundo
+      </button>
+      <app-form-new-world
+        [visible]="visibleNewWorld"
+        (closeEvent)="closeWorldDialog()"
+      />
+    </div>
+    <article class="flex gap-x-6 gap-y-6 flex-wrap justify-center">
+      @for (world of worlds; track $index) {
+      <app-world-card [world]="world"></app-world-card>
+      }
+    </article>
+  </section>
+</main>

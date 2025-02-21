@@ -1,0 +1,30 @@
+<article class="bg-zinc-100 border-zinc-400 border-2 rounded-lg py-4 px-7 min-w-80 xl:w-[412px]">
+  <h2 class="mb-3 font-bold text-3xl text-center">Login</h2>
+  <form [formGroup]="loginForm"  (ngSubmit)="submitLogin()">
+    <div class="flex flex-col my-3">
+      <label for="username">Nome de Usuário</label>
+      <input
+        pInputText
+        id="username"
+        aria-describedby="username"
+        formControlName="username"
+      />
+    </div>
+
+    <div class="flex flex-col my-3">
+      <label for="password">Senha</label>
+      <p-password
+        [toggleMask]="true"
+        [feedback]="false"
+        id="password"
+        aria-describedby="user_password"
+        formControlName="password"
+        [style]="{ width: '100%' }"
+        [inputStyle]="{ width: '100%' }"
+      />
+      <span class="text-blue-700 mt-1">Esqueci minha senha</span>
+    </div>
+
+    <button pButton icon="pi pi-user" label="Acessar" class="w-full" type="submit"></button>
+  </form>
+</article>

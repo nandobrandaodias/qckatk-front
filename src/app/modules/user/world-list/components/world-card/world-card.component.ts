@@ -1,6 +1,6 @@
 import { Component, Input } from '@angular/core';
-import { World } from '../../../../../utils/interfaces/world';
-import { SharedModule } from '../../../../../utils/modules/shared.module';
+import { World } from '../../../../../shared/interfaces/world';
+import { SharedModule } from '../../../../../shared/modules/shared.module';
 
 @Component({
   selector: 'app-world-card',

@@ -1,0 +1,65 @@
+<main class="">
+  <app-navbar />
+  <section class="w-5/6 mx-auto mt-4 py-8 bg-white rounded-lg p-4">
+    <h2 class="mb-3 font-bold text-3xl text-center">Crie sua conta</h2>
+    <form [formGroup]="signUpForm" (ngSubmit)="submitSignup()">
+      <article class="w-full">
+        <div class="max-w-[860px] mx-auto flex flex-col my-3">
+          <label for="username">Nome de Usuário</label>
+          <input
+            pInputText
+            id="username"
+            aria-describedby="username"
+            formControlName="username"
+          />
+        </div>
+
+        <div class="max-w-[860px] mx-auto flex flex-col my-3">
+          <label for="email">E-mail</label>
+          <input
+            pInputText
+            id="email"
+            aria-describedby="email"
+            formControlName="email"
+          />
+        </div>
+
+        <div class="max-w-[860px] mx-auto flex flex-col my-3">
+          <label for="password">Senha</label>
+          <p-password
+            [toggleMask]="true"
+            [feedback]="false"
+            id="password"
+            aria-describedby="user password"
+            formControlName="password"
+            [style]="{ width: '100%' }"
+            [inputStyle]="{ width: '100%' }"
+          />
+        </div>
+
+        <div class="max-w-[860px] mx-auto flex flex-col my-3">
+          <label for="confirmpassword">Confirmar Senha</label>
+          <p-password
+            [toggleMask]="true"
+            [feedback]="false"
+            id="confirmpassword"
+            aria-describedby="confirm password"
+            formControlName="confirmpassword"
+            [style]="{ width: '100%' }"
+            [inputStyle]="{ width: '100%' }"
+          />
+        </div>
+
+        <div class="max-w-[860px] mx-auto">
+          <button
+            pButton
+            icon="pi pi-user"
+            label="Cadastrar"
+            class="w-full"
+            type="submit"
+          ></button>
+        </div>
+      </article>
+    </form>
+  </section>
+</main>

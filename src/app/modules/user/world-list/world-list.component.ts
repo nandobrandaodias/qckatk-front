@@ -1,12 +1,13 @@
 import { Component, OnInit } from '@angular/core';
-import { SharedModule } from '../../../utils/modules/shared.module';
+import { SharedModule } from '../../../shared/modules/shared.module';
 import { WorldCardComponent } from './components/world-card/world-card.component';
-import { World } from '../../../utils/interfaces/world';
+import { World } from '../../../shared/interfaces/world';
 import { FormNewWorldComponent } from './components/form-new-world/form-new-world.component';
+import { NavbarComponent } from '../../../shared/components/navbar/navbar.component';
 
 @Component({
   selector: 'app-world-list',
-  imports: [SharedModule, WorldCardComponent, FormNewWorldComponent],
+  imports: [SharedModule, WorldCardComponent, FormNewWorldComponent, NavbarComponent],
   templateUrl: './world-list.component.html',
   styleUrl: './world-list.component.css'
 })

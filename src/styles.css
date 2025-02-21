@@ -12,20 +12,25 @@
 
 
 body {
-    background-color: #ebe2d1;
+    background-color: #e8e8e8;
     box-sizing: border-box;
     margin: 0;
     padding: 0;
     font-family: 'Poppins', sans-serif;
 }
 
+.bg-primary {
+    background-color: #EC6613 !important;
+}
+
 .btn, .btn-primary{
-    font-size: 1.3rem;
+    font-size: 1.1rem;
     font-weight: 500;
     color: white;
     border-radius: 8px;
     padding: 12px 16px;
-    background-color: #db8018;
+    background-color: #EC6613;
+    border: 0 !important;
 }
 
 .btn-primary:hover{

@@ -2,8 +2,8 @@ import { ApplicationConfig, provideZoneChangeDetection } from '@angular/core';
 import { provideRouter } from '@angular/router';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { providePrimeNG } from 'primeng/config';
-import Aura from '@primeng/themes/aura';
 import { routes } from './app.routes';
+import { PrimaryTheme } from './shared/utils/primary.theme';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -12,7 +12,7 @@ export const appConfig: ApplicationConfig = {
     provideAnimationsAsync(),
     providePrimeNG({
       theme: {
-        preset: Aura,
+        preset: PrimaryTheme,
         options: {
           prefix: 'qa',
           darkModeSelector: '.app-dark-mode',
@@ -20,7 +20,6 @@ export const appConfig: ApplicationConfig = {
               name: 'primeng',
               order: 'tailwind-base, primeng, tailwind-utilities'
           }
-          
       }
       },
     }),

@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { SharedModule } from '../../../../../utils/modules/shared.module';
+import { SharedModule } from '../../../../../shared/modules/shared.module';
 
 @Component({
   selector: 'app-form-new-world',

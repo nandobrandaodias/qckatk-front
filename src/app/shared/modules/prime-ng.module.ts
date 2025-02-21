@@ -7,6 +7,8 @@ import { InputTextModule } from 'primeng/inputtext';
 import { Ripple } from 'primeng/ripple';
 import { DataViewModule } from 'primeng/dataview';
 import { DialogModule } from 'primeng/dialog';
+import { PopoverModule } from 'primeng/popover';
+import { PasswordModule } from 'primeng/password';
 
 
 
@@ -20,7 +22,9 @@ import { DialogModule } from 'primeng/dialog';
     InputTextModule, 
     Ripple,
     DataViewModule,
-    DialogModule
+    DialogModule,
+    PopoverModule,
+    PasswordModule
   ],
   exports: [
     ButtonModule,
@@ -30,7 +34,9 @@ import { DialogModule } from 'primeng/dialog';
     InputTextModule, 
     Ripple,
     DataViewModule,
-    DialogModule
+    DialogModule,
+    PopoverModule,
+    PasswordModule
   ]
 })
 export class PrimeNgModule { }

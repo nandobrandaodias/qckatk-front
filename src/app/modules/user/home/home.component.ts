@@ -1,10 +1,11 @@
 import { Component } from '@angular/core';
 import { MenuItem } from 'primeng/api';
-import { SharedModule } from '../../../utils/modules/shared.module';
+import { SharedModule } from '../../../shared/modules/shared.module';
+import { NavbarComponent } from "../../../shared/components/navbar/navbar.component";
 
 @Component({
   selector: 'app-home',
-  imports: [SharedModule],
+  imports: [SharedModule, NavbarComponent],
   templateUrl: './home.component.html',
   styleUrl: './home.component.css'
 })
