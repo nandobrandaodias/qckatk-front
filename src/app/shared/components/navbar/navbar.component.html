@@ -10,8 +10,18 @@
         <li class="nav-link" routerLink="/tabletop/1">Features</li>
       </ul>
     </div>
-    <div class="flex items-center">
-      <i class="pi pi-user cursor-pointer" style="font-size: 1.5rem"></i>
+    <div class="flex items-center relative gap-x-6">
+      @if(true){
+      <button pButton label="Cadastre-se" routerLink="/signup"></button>
+      <button
+        pButton
+        label="Tenho conta"
+        severity="info"
+        (click)="toggleLogin()"
+      ></button>
+      @if(showLogin){
+      <app-login (blur)="toggleLogin()" class="absolute right-0 top-[64px] z-50" />
+      } }
     </div>
   </div>
 </nav>
