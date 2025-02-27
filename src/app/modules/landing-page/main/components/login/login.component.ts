@@ -1,6 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { SharedModule } from '../../../../../shared/modules/shared.module';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { AuthService } from '../../../../../shared/modules/auth/auth.service';
 
 @Component({
   selector: 'app-login',
@@ -9,6 +10,7 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
   styleUrl: './login.component.css'
 })
 export class LoginComponent{
+  authService = inject(AuthService)
   loginForm: FormGroup;
 
   startLoginForm(){
@@ -23,7 +25,6 @@ export class LoginComponent{
   }
 
   submitLogin(){
-    console.log("Tentando acessar...")
-    console.log(this.loginForm.value)
+    if(this.loginForm.valid) this.authService.login(this.loginForm.value)
   }
 }

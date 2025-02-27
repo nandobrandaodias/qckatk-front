@@ -4,6 +4,7 @@ import { HomeComponent } from './modules/user/home/home.component';
 import { TabletopComponent } from './modules/tabletop/tabletop/tabletop.component';
 import { WorldListComponent } from './modules/user/world-list/world-list.component';
 import { RegisterComponent } from './modules/landing-page/register/register.component';
+import { AuthGuard } from './shared/modules/auth/auth.guard';
 
 export const routes: Routes = [
     {
@@ -11,19 +12,29 @@ export const routes: Routes = [
         component: MainComponent
     },
     {
-        path: 'home',
-        component: HomeComponent
+        path: '',
+        canActivateChild: [AuthGuard],
+        children: [
+            {
+                path: 'home',
+                component: HomeComponent
+            },        
+            {
+                path: 'list',
+                component: WorldListComponent
+            },
+            {
+                path: 'tabletop/:id',
+                component: TabletopComponent
+            },
+        ]
     },
     {
         path: 'signup',
         component: RegisterComponent
     },
     {
-        path: 'list',
-        component: WorldListComponent
-    },
-    {
-        path: 'tabletop/:id',
-        component: TabletopComponent
+        path: '**',
+        redirectTo: '/'
     }
 ];

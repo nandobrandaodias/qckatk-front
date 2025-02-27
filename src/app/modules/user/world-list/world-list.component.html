@@ -1,7 +1,7 @@
 <main>
   <app-navbar />
   <section class="mx-auto mt-16 w-10/12">
-    <div class="mb-8 pl-3">
+    <div class="mb-8">
       <button pButton class="btn-primary" (click)="openWorldDialog()">
         <span class="pi pi-plus"></span>
         Novo Mundo
@@ -11,10 +11,15 @@
         (closeEvent)="closeWorldDialog()"
       />
     </div>
-    <article class="flex gap-x-6 gap-y-6 flex-wrap justify-center">
-      @for (world of worlds; track $index) {
-      <app-world-card [world]="world"></app-world-card>
-      }
-    </article>
+    @if(worlds.length){
+      <article class="flex gap-x-6 gap-y-6 flex-wrap">
+        @for (world of worlds; track $index) {
+        <app-world-card [world]="world"></app-world-card>
+        }
+      </article>
+    }
+    @else{
+      <h3 class="text-xl">Nenhum mundo criado até o momento...</h3>
+    }
   </section>
 </main>

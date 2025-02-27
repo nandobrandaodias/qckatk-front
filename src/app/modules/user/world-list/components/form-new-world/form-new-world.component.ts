@@ -1,5 +1,6 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, inject, Input, Output } from '@angular/core';
 import { SharedModule } from '../../../../../shared/modules/shared.module';
+import { WorldsService } from '../../../../../shared/services/worlds.service';
 
 @Component({
   selector: 'app-form-new-world',
@@ -10,6 +11,22 @@ import { SharedModule } from '../../../../../shared/modules/shared.module';
 export class FormNewWorldComponent {
   @Input() visible: boolean;
   @Output() closeEvent = new EventEmitter<boolean>();
+  worldsService = inject(WorldsService);
+  name: string;
+  description: string;
+  public: boolean = true;
+
+  saveWorld(){
+    this.worldsService.create({
+      name: this.name,
+      description: this.description,
+      public: this.public
+    }).subscribe({
+      next: ()=>{
+        this.closeEvent.emit()
+      }
+    })
+  }
 
   close(){
     this.closeEvent.emit()

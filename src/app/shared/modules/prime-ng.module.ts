@@ -9,7 +9,8 @@ import { DataViewModule } from 'primeng/dataview';
 import { DialogModule } from 'primeng/dialog';
 import { PopoverModule } from 'primeng/popover';
 import { PasswordModule } from 'primeng/password';
-
+import { ToggleButtonModule } from 'primeng/togglebutton';
+import { ToastModule } from 'primeng/toast';
 
 
 @NgModule({
@@ -24,7 +25,9 @@ import { PasswordModule } from 'primeng/password';
     DataViewModule,
     DialogModule,
     PopoverModule,
-    PasswordModule
+    PasswordModule,
+    ToggleButtonModule,
+    ToastModule
   ],
   exports: [
     ButtonModule,
@@ -36,7 +39,9 @@ import { PasswordModule } from 'primeng/password';
     DataViewModule,
     DialogModule,
     PopoverModule,
-    PasswordModule
+    PasswordModule,
+    ToggleButtonModule,
+    ToastModule
   ]
 })
 export class PrimeNgModule { }

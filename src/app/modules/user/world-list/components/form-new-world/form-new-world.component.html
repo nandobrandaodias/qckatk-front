@@ -8,19 +8,25 @@
   <div class="mb-2">
     <div class="flex flex-col gap-2">
       <label for="nome">Nome</label>
-      <input pInputText id="nome" aria-describedby="nome-help" />
+      <input pInputText id="nome" aria-describedby="nome-help" [(ngModel)]="name"/>
     </div>
   </div>
 
   <div class="my-4">
     <div class="flex flex-col gap-2">
       <label for="descricao">Descrição</label>
-      <input pInputText id="descricao" aria-describedby="descricao-help" />
+      <input pInputText id="descricao" aria-describedby="descricao-help" [(ngModel)]="description"/>
     </div>
+  </div>
+
+  <div class="my-4">
+    <p-togglebutton class="bg-blue-600"
+    [(ngModel)]="public" onLabel="Público" offLabel="Privado" styleClass="w-24" />
   </div>
 
   <div class="flex justify-end gap-2">
     <p-button label="Cancelar" severity="secondary" (click)="close()" />
-    <p-button label="Criar" (click)="close()" />
+    <p-button label="Criar" (click)="saveWorld()" />
   </div>
+  <p-toast />
 </p-dialog>

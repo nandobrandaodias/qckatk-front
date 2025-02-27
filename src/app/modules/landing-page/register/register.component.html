@@ -5,7 +5,7 @@
     <form [formGroup]="signUpForm" (ngSubmit)="submitSignup()">
       <article class="w-full">
         <div class="max-w-[860px] mx-auto flex flex-col my-3">
-          <label for="username">Nome de Usuário</label>
+          <app-label name="username" description="Nome de Usuário" [required]="true" />
           <input
             pInputText
             id="username"
@@ -15,17 +15,19 @@
         </div>
 
         <div class="max-w-[860px] mx-auto flex flex-col my-3">
-          <label for="email">E-mail</label>
+          <app-label name="email" description="E-mail" [required]="true" />
           <input
             pInputText
             id="email"
             aria-describedby="email"
             formControlName="email"
+            class="ng-invalid ng-dirty"
           />
+          <p class="mt-1 text-red-500">Campo Obrigatório</p>
         </div>
 
         <div class="max-w-[860px] mx-auto flex flex-col my-3">
-          <label for="password">Senha</label>
+          <app-label name="password" description="Senha" [required]="true" />
           <p-password
             [toggleMask]="true"
             [feedback]="false"
@@ -38,7 +40,7 @@
         </div>
 
         <div class="max-w-[860px] mx-auto flex flex-col my-3">
-          <label for="confirmpassword">Confirmar Senha</label>
+          <app-label name="confirmpassword" description="Confirmar Senha" [required]="true" />
           <p-password
             [toggleMask]="true"
             [feedback]="false"
