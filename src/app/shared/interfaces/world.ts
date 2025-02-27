@@ -1,5 +1,5 @@
 export interface World {
-    id: string,
+    _id: string,
     name: string,
     banner: string,
     description: string,
