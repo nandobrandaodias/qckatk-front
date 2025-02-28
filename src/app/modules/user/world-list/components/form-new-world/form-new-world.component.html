@@ -7,21 +7,25 @@
 >
   <div class="mb-2">
     <div class="flex flex-col gap-2">
-      <label for="nome">Nome</label>
-      <input pInputText id="nome" aria-describedby="nome-help" [(ngModel)]="name"/>
+      <app-label name="name" description="Nome" [required]="true" />
+      <input pInputText id="nome" aria-describedby="nome-help" [(ngModel)]="name"
+      [ngClass]="name ? '  ' : ' ng-invalid ng-dirty '"/>
+      @if(!name){
+        <p class="text-red-500">Campo Obrigatório</p>
+      }
     </div>
   </div>
 
   <div class="my-4">
     <div class="flex flex-col gap-2">
-      <label for="descricao">Descrição</label>
+      <app-label name="description" description="Descrição" [required]="false" />
       <input pInputText id="descricao" aria-describedby="descricao-help" [(ngModel)]="description"/>
     </div>
   </div>
 
   <div class="my-4">
-    <p-togglebutton class="bg-blue-600"
-    [(ngModel)]="public" onLabel="Público" offLabel="Privado" styleClass="w-24" />
+    <p-togglebutton [(ngModel)]="public" onLabel="Público" offLabel="Privado" styleClass="w-24"
+    [styleClass]="!public ? ' bg-blue-600 text-white ' : ''" />
   </div>
 
   <div class="flex justify-end gap-2">

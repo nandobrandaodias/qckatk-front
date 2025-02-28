@@ -1,7 +1,7 @@
 <nav class="w-full bg-white">
   <div class="py-4 flex justify-between mx-auto max-w-[1520px] align-middle">
-    <div class="w-1/4 justify-center">
-      <div class="w-14 h-14 bg-zinc-300 rounded-full"></div>
+    <div class="w-1/4 flex items-center justify-center">
+      <div class="w-14 h-14 bg-zinc-300 rounded-full" routerLink="['/']"></div>
     </div>
     <div class="flex items-center w-1/2 justify-center">
       <ul class="flex gap-x-6">
@@ -24,7 +24,11 @@
       } 
     }
       @else {
-        <p-button icon="pi pi-user" [rounded]="true" severity="info" (click)="logout()"/>
+        <div class="card flex justify-center">
+          <p-menu #menu [model]="items" [popup]="true" appendTo="body"></p-menu>
+          <p-avatar image="https://primefaces.org/cdn/primeng/images/demo/avatar/amyelsner.png" size="xlarge" shape="circle" 
+        (click)="menu.toggle($event)" class="mr-2 cursor-pointer duration-100 hover:scale-110"/>
+      </div>      
       }
     </div>
   </div>

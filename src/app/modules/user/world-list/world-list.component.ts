@@ -1,15 +1,13 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { SharedModule } from '../../../shared/modules/shared.module';
-import { WorldCardComponent } from './components/world-card/world-card.component';
 import { World } from '../../../shared/interfaces/world';
 import { FormNewWorldComponent } from './components/form-new-world/form-new-world.component';
 import { NavbarComponent } from '../../../shared/components/navbar/navbar.component';
-import { UsersService } from '../../../shared/services/users.service';
 import { WorldsService } from '../../../shared/services/worlds.service';
 
 @Component({
   selector: 'app-world-list',
-  imports: [SharedModule, WorldCardComponent, FormNewWorldComponent, NavbarComponent],
+  imports: [SharedModule, FormNewWorldComponent, NavbarComponent],
   templateUrl: './world-list.component.html',
   styleUrl: './world-list.component.css'
 })
@@ -25,7 +23,6 @@ export class WorldListComponent implements OnInit{
         this.worlds = res
       }
     })
-    console.log(this.worlds)
   }
 
 
@@ -35,5 +32,9 @@ export class WorldListComponent implements OnInit{
   
   closeWorldDialog(){
     this.visibleNewWorld = false
+  }
+
+  selectWorld(world: any){
+    console.log(world)
   }
 }

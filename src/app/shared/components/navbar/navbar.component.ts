@@ -12,6 +12,28 @@ import { AuthService } from '../../modules/auth/auth.service';
 export class NavbarComponent {
   authService = inject(AuthService)
   showLogin: boolean = false;
+  items: any[] = [
+    {
+      label: 'Opções',
+      items: [
+          {
+              label: 'Meu Perfil',
+              icon: 'pi pi-user'
+          },
+          {
+              label: 'Meus Mundos',
+              icon: 'pi pi-globe'
+          },
+          {
+              label: 'Sair',
+              icon: 'pi pi-sign-out'
+          }
+      ]
+  }
+  ]
+
+  ngOnInit(){
+  }
 
   get getUserToken(){
     return this.authService.isAuthenticatedUser() 

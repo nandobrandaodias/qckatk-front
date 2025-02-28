@@ -11,7 +11,11 @@
             id="username"
             aria-describedby="username"
             formControlName="username"
+            [ngClass]="signUpForm.controls['username'].valid ? '  ' : ' ng-invalid ng-dirty '"
           />
+          @if(!signUpForm.controls['username'].valid && signUpForm.controls['username'].dirty){
+            <p class="mt-1 text-red-500">Mínimo 5 Caractéres</p>
+          }
         </div>
 
         <div class="max-w-[860px] mx-auto flex flex-col my-3">
@@ -21,9 +25,11 @@
             id="email"
             aria-describedby="email"
             formControlName="email"
-            class="ng-invalid ng-dirty"
+            [ngClass]="signUpForm.controls['email'].valid ? '  ' : ' ng-invalid ng-dirty '"
           />
-          <p class="mt-1 text-red-500">Campo Obrigatório</p>
+          @if(!signUpForm.controls['email'].valid && signUpForm.controls['email'].dirty){
+            <p class="mt-1 text-red-500">E-mail Inválido</p>
+          }
         </div>
 
         <div class="max-w-[860px] mx-auto flex flex-col my-3">
@@ -34,9 +40,12 @@
             id="password"
             aria-describedby="user password"
             formControlName="password"
-            [style]="{ width: '100%', zindex: 1}"
-            [inputStyle]="{ width: '100%', zindex: 1 }"
+            fluid
+            [ngClass]="signUpForm.controls['password'].valid ? '  ' : ' ng-invalid ng-dirty '"
           />
+          @if(!signUpForm.controls['password'].valid && signUpForm.controls['password'].dirty){
+            <p class="mt-1 text-red-500">Mínimo 5 Caractéres</p>
+          }
         </div>
 
         <div class="max-w-[860px] mx-auto flex flex-col my-3">
@@ -47,9 +56,12 @@
             id="confirmpassword"
             aria-describedby="confirm password"
             formControlName="confirmpassword"
-            [style]="{ width: '100%' }"
-            [inputStyle]="{ width: '100%' }"
+            fluid
+            [ngClass]="signUpForm.controls['confirmpassword'].valid ? '  ' : ' ng-invalid ng-dirty '"
           />
+          @if(signUpForm.controls['confirmpassword'].dirty && signUpForm.hasError("PasswordNoMatch") ){
+            <p class="mt-1 text-red-500">As senhas não coincidem</p>
+          }
         </div>
 
         <div class="max-w-[860px] mx-auto">

@@ -11,6 +11,9 @@ import { PopoverModule } from 'primeng/popover';
 import { PasswordModule } from 'primeng/password';
 import { ToggleButtonModule } from 'primeng/togglebutton';
 import { ToastModule } from 'primeng/toast';
+import { MenuModule } from 'primeng/menu';
+import { TableModule } from 'primeng/table';
+import { ChipModule } from 'primeng/chip'
 
 
 @NgModule({
@@ -27,7 +30,10 @@ import { ToastModule } from 'primeng/toast';
     PopoverModule,
     PasswordModule,
     ToggleButtonModule,
-    ToastModule
+    ToastModule,
+    MenuModule,
+    TableModule,
+    ChipModule
   ],
   exports: [
     ButtonModule,
@@ -41,7 +47,10 @@ import { ToastModule } from 'primeng/toast';
     PopoverModule,
     PasswordModule,
     ToggleButtonModule,
-    ToastModule
+    ToastModule,
+    MenuModule,
+    TableModule,
+    ChipModule
   ]
 })
 export class PrimeNgModule { }
