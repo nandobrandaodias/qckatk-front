@@ -36,3 +36,18 @@ body {
 .btn-primary:hover{
     background-color: #db7a12;
 }
+
+.btn, .btn-secondary{
+    font-size: 1.1rem;
+    font-weight: 500;
+    color: #EC6613;
+    border-radius: 8px;
+    padding: 12px 16px;
+    background-color: black;
+    border: 0 !important;
+}
+
+.btn-secondary:hover{
+    background-color: #EC6613;
+    color: white;
+}

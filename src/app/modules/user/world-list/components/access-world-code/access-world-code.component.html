@@ -1,0 +1,32 @@
+<p-dialog
+  header="Acessar mundo por Código"
+  [modal]="true"
+  [(visible)]="visible"
+  [style]="{ width: '25rem' }"
+  closable="false"
+> 
+<form [formGroup]="worldForm" (ngSubmit)="enterWorld()">
+  <div class="mb-2">
+    <div class="flex justify-center">
+      <p-inputotp formControlName="code" [length]="6"
+      (ngModelChange)="searchWorld()"/>
+    </div>
+  </div>
+
+  <p-divider />
+
+  @if(notFound){ 
+    <h2 class="text-xl font-bold my-5">Nenhum mundo encontrado...</h2>
+  }
+
+  @if(world){
+    <h2 class="text-xl font-bold my-3">{{world?.name}}</h2>
+  }
+
+  <div class="flex justify-end gap-2">
+    <p-button label="Cancelar" severity="secondary" (click)="close()" />
+    <p-button label="Acessar"/>
+  </div>
+  <p-toast />
+</form>
+</p-dialog>

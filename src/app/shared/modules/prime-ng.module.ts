@@ -13,17 +13,20 @@ import { ToggleButtonModule } from 'primeng/togglebutton';
 import { ToastModule } from 'primeng/toast';
 import { MenuModule } from 'primeng/menu';
 import { TableModule } from 'primeng/table';
-import { ChipModule } from 'primeng/chip'
+import { ChipModule } from 'primeng/chip';
+import { KeyFilterModule } from 'primeng/keyfilter';
+import { InputOtpModule } from 'primeng/inputotp';
+import { DividerModule } from 'primeng/divider';
 
 
 @NgModule({
   declarations: [],
   imports: [
     ButtonModule,
-    Menubar, 
-    BadgeModule, 
-    AvatarModule, 
-    InputTextModule, 
+    Menubar,
+    BadgeModule,
+    AvatarModule,
+    InputTextModule,
     Ripple,
     DataViewModule,
     DialogModule,
@@ -33,14 +36,17 @@ import { ChipModule } from 'primeng/chip'
     ToastModule,
     MenuModule,
     TableModule,
-    ChipModule
+    ChipModule,
+    KeyFilterModule,
+    InputOtpModule,
+    DividerModule,
   ],
   exports: [
     ButtonModule,
-    Menubar, 
-    BadgeModule, 
-    AvatarModule, 
-    InputTextModule, 
+    Menubar,
+    BadgeModule,
+    AvatarModule,
+    InputTextModule,
     Ripple,
     DataViewModule,
     DialogModule,
@@ -50,7 +56,10 @@ import { ChipModule } from 'primeng/chip'
     ToastModule,
     MenuModule,
     TableModule,
-    ChipModule
-  ]
+    ChipModule,
+    KeyFilterModule,
+    InputOtpModule,
+    DividerModule,
+  ],
 })
-export class PrimeNgModule { }
+export class PrimeNgModule {}

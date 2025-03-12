@@ -18,6 +18,11 @@
     "target": "ES2022",
     "module": "ES2022",
     "strictPropertyInitialization": false,
+    "paths": {
+      "@/*": ["./src/*"],
+      "@media/*": ["./assets/*"],
+      "@shared/*": ["./src/app/shared/*"]
+    }
   },
   "angularCompilerOptions": {
     "enableI18nLegacyMessageIdFormat": false,

@@ -1,14 +1,24 @@
 <main>
   <app-navbar />
   <section class="mx-auto mt-12 w-10/12 bg-white p-4 rounded-md">
-    <div class="mb-8">
-      <button pButton class="btn-primary" (click)="openWorldDialog()">
+    <div class="mb-8 flex gap-x-4 flex-wrap">
+      <button pButton class="btn-primary" (click)="openWorldDialog('form')">
         <span class="pi pi-plus"></span>
         Novo Mundo
       </button>
+      <button pButton class="btn-secondary" (click)="openWorldDialog('code')">
+        <span class="pi pi-plus"></span>
+        Acessar por Código
+      </button>
       <app-form-new-world
         [visible]="visibleNewWorld"
-        (closeEvent)="closeWorldDialog()"
+        (closeEvent)="closeWorldDialog('form')"
+        (refreshEvent)="listWorld()"
+      />
+      <app-access-world-code
+        [visible]="visibleAccessCode"
+        (closeEvent)="closeWorldDialog('code')"
+        (refreshEvent)="listWorld()"
       />
     </div>
     @if(worlds.length){
@@ -21,6 +31,7 @@
                   <th>Criador</th>
                   <th>Visibilidade</th>
                   <th>Sistema</th>
+                  <th>Ação</th>
               </tr>
           </ng-template>
           <ng-template #body let-world>
@@ -32,6 +43,7 @@
                     [ngClass]="world.public ? ' bg-green-500 ': ' bg-blue-600 '"/>
                   </td>
                   <td>{{ world.system ?? "-" }}</td>
+                  <td [routerLink]="['/tabletop/', world._id]">Entrar</td>
               </tr>
           </ng-template>
           <ng-template #emptymessage>

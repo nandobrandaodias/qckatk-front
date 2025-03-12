@@ -3,6 +3,11 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
+    "paths": {
+      "@/*": ["./src/*"],
+      "@media/*": ["./src/assets/*"],
+      "@shared/*": ["./src/app/shared/*"]
+    },
     "outDir": "./out-tsc/spec",
     "types": [
       "jasmine"

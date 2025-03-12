@@ -4,7 +4,7 @@ import { SharedModule } from '../../../shared/modules/shared.module';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { UsersService } from '../../../shared/services/users.service';
 import { LabelComponent } from '../../../shared/components/label/label.component';
-import { confirmPasswordValidator } from '../../../shared/utils/custom_validators/ConfirmPasswordValidator';
+import { confirmPasswordValidator } from '../../../shared/utils/validators/ConfirmPasswordValidator';
 
 @Component({
   selector: 'app-register',

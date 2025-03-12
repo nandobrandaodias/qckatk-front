@@ -1,9 +1,5 @@
 import { Routes } from '@angular/router';
 import { MainComponent } from './modules/landing-page/main/main.component';
-import { HomeComponent } from './modules/user/home/home.component';
-import { TabletopComponent } from './modules/tabletop/tabletop/tabletop.component';
-import { WorldListComponent } from './modules/user/world-list/world-list.component';
-import { RegisterComponent } from './modules/landing-page/register/register.component';
 import { AuthGuard } from './shared/modules/auth/auth.guard';
 
 export const routes: Routes = [
@@ -14,24 +10,33 @@ export const routes: Routes = [
     {
         path: '',
         canActivateChild: [AuthGuard],
-        children: [
+        loadChildren: () => [
             {
                 path: 'home',
-                component: HomeComponent
+                loadComponent: ()=>import('./modules/user/home/home.component').then((m) => m.HomeComponent),
+
             },        
             {
                 path: 'list',
-                component: WorldListComponent
+                loadComponent: ()=>import('./modules/user/world-list/world-list.component').then((m) => m.WorldListComponent)
+            },
+            {
+                path: 'meu-perfil',
+                loadComponent: ()=>import('./modules/user/home/home.component').then((m) => m.HomeComponent)
+            },
+            {
+                path: 'meus-mundos',
+                loadComponent: ()=>import('./modules/user/home/home.component').then((m) => m.HomeComponent)
             },
             {
                 path: 'tabletop/:id',
-                component: TabletopComponent
+                loadComponent: ()=>import('./modules/tabletop/tabletop/tabletop.component').then((m) => m.TabletopComponent)
             },
         ]
     },
     {
         path: 'signup',
-        component: RegisterComponent
+        loadComponent: ()=>import('./modules/landing-page/register/register.component').then((m) => m.RegisterComponent)
     },
     {
         path: '**',

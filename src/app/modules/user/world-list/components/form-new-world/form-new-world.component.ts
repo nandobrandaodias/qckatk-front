@@ -1,36 +1,54 @@
 import { Component, EventEmitter, inject, Input, Output } from '@angular/core';
 import { SharedModule } from '../../../../../shared/modules/shared.module';
 import { WorldsService } from '../../../../../shared/services/worlds.service';
-import { LabelComponent } from "../../../../../shared/components/label/label.component";
+import { LabelComponent } from '../../../../../shared/components/label/label.component';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
 
 @Component({
   selector: 'app-form-new-world',
   imports: [SharedModule, LabelComponent],
   templateUrl: './form-new-world.component.html',
-  styleUrl: './form-new-world.component.css'
+  styleUrl: './form-new-world.component.css',
 })
 export class FormNewWorldComponent {
   @Input() visible: boolean;
+  @Output() refreshEvent = new EventEmitter<boolean>();
   @Output() closeEvent = new EventEmitter<boolean>();
   worldsService = inject(WorldsService);
-  name: string;
+  worldForm: FormGroup;
   description: string;
+  system: string;
   public: boolean = true;
 
-  saveWorld(){
-    if(!this.name) return
-    this.worldsService.create({
-      name: this.name,
-      description: this.description,
-      public: this.public
-    }).subscribe({
-      next: ()=>{
-        this.closeEvent.emit()
-      }
-    })
+  ngOnInit(){
+    this.startWorldForm()
   }
 
-  close(){
-    this.closeEvent.emit()
+  startWorldForm() {
+    this.worldForm = new FormGroup(
+      {
+        name: new FormControl('', [Validators.required]),
+        description: new FormControl(''),
+        system: new FormControl(''),
+        public: new FormControl(true, [Validators.required]),
+      }
+    );
+  }
+
+  saveWorld() {
+    if(!this.worldForm.valid) return
+    this.worldsService
+      .create(this.worldForm.value)
+      .subscribe({
+        next: () => {
+          this.startWorldForm();
+          this.closeEvent.emit();
+          this.refreshEvent.emit();
+        },
+      });
+  }
+
+  close() {
+    this.closeEvent.emit();
   }
 }

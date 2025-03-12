@@ -4,13 +4,14 @@
   [(visible)]="visible"
   [style]="{ width: '25rem' }"
   closable="false"
->
+> 
+<form [formGroup]="worldForm" (ngSubmit)="saveWorld()">
   <div class="mb-2">
     <div class="flex flex-col gap-2">
       <app-label name="name" description="Nome" [required]="true" />
-      <input pInputText id="nome" aria-describedby="nome-help" [(ngModel)]="name"
-      [ngClass]="name ? '  ' : ' ng-invalid ng-dirty '"/>
-      @if(!name){
+      <input pInputText id="nome" aria-describedby="nome-help" formControlName="name"
+      [ngClass]="worldForm.controls['name'].valid ? '  ' : ' ng-invalid ng-dirty '"/>
+      @if(!worldForm.controls['name'].valid && worldForm.controls['name'].dirty){
         <p class="text-red-500">Campo Obrigatório</p>
       }
     </div>
@@ -19,13 +20,20 @@
   <div class="my-4">
     <div class="flex flex-col gap-2">
       <app-label name="description" description="Descrição" [required]="false" />
-      <input pInputText id="descricao" aria-describedby="descricao-help" [(ngModel)]="description"/>
+      <input pInputText id="descricao" aria-describedby="descricao-help" formControlName="description"/>
     </div>
   </div>
 
   <div class="my-4">
-    <p-togglebutton [(ngModel)]="public" onLabel="Público" offLabel="Privado" styleClass="w-24"
-    [styleClass]="!public ? ' bg-blue-600 text-white ' : ''" />
+    <div class="flex flex-col gap-2">
+      <app-label name="system" description="Sistema" [required]="false" />
+      <input pInputText id="sistema" aria-describedby="descricao-help" formControlName="system"/>
+    </div>
+  </div>
+
+  <div class="my-4">
+    <p-togglebutton formControlName="public" onLabel="Público" offLabel="Privado" styleClass="w-24"
+    [styleClass]="!this.worldForm.value.public ? ' bg-blue-600 text-white ' : ''" />
   </div>
 
   <div class="flex justify-end gap-2">
@@ -33,4 +41,5 @@
     <p-button label="Criar" (click)="saveWorld()" />
   </div>
   <p-toast />
+</form>
 </p-dialog>

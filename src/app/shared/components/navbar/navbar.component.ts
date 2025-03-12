@@ -2,6 +2,7 @@ import { Component, inject } from '@angular/core';
 import { SharedModule } from '../../modules/shared.module';
 import { LoginComponent } from "../../../modules/landing-page/main/components/login/login.component";
 import { AuthService } from '../../modules/auth/auth.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-navbar',
@@ -10,6 +11,7 @@ import { AuthService } from '../../modules/auth/auth.service';
   styleUrl: './navbar.component.css'
 })
 export class NavbarComponent {
+  router = inject(Router)
   authService = inject(AuthService)
   showLogin: boolean = false;
   items: any[] = [
@@ -18,15 +20,24 @@ export class NavbarComponent {
       items: [
           {
               label: 'Meu Perfil',
-              icon: 'pi pi-user'
+              icon: 'pi pi-user',
+              command: () => {
+                this.router.navigate(["/meu-perfil"]);
+              }
           },
           {
               label: 'Meus Mundos',
-              icon: 'pi pi-globe'
+              icon: 'pi pi-globe',
+              command: () => {
+                this.router.navigate(["/meus-mundos"]);
+              }
           },
           {
               label: 'Sair',
-              icon: 'pi pi-sign-out'
+              icon: 'pi pi-sign-out',
+              command: () => {
+                this.logout();
+            }
           }
       ]
   }
