@@ -2,10 +2,12 @@ import { Component, EventEmitter, inject, Input, Output } from '@angular/core';
 import { SharedModule } from '../../../../../shared/modules/shared.module';
 import { WorldsService } from '../../../../../shared/services/worlds.service';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { LabelComponent } from "../../../../../shared/components/label/label.component";
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-access-world-code',
-  imports: [SharedModule],
+  imports: [SharedModule, LabelComponent],
   templateUrl: './access-world-code.component.html',
   styleUrl: './access-world-code.component.css',
 })
@@ -14,9 +16,11 @@ export class AccessWorldCodeComponent {
   @Output() refreshEvent = new EventEmitter<boolean>();
   @Output() closeEvent = new EventEmitter<boolean>();
   worldsService = inject(WorldsService);
+  router = inject(Router);
   worldForm: FormGroup;
-  world: any = {}
+  world: any = ''
   notFound: boolean = false
+  password: string = ''
 
   ngOnInit(){
     this.startWorldForm()
@@ -28,7 +32,7 @@ export class AccessWorldCodeComponent {
 
   searchWorld(){
     if(this.worldForm.value.code.length != 6){
-      this.world = {}
+      this.world = ''
       return
     }
 
@@ -50,9 +54,16 @@ export class AccessWorldCodeComponent {
 
   }
 
-  enterWorld() {
-    if(!this.worldForm.valid) return
-    this.worldsService.join(this.worldForm.value.code, {}).subscribe({})
+  async enterWorld() {
+    await this.worldsService.join(this.world._id, {password: this.password}).subscribe({
+      next: (res)=> {
+        if(!res) return
+        this.router.navigate(['tabletop/', this.world._id])
+       },
+      error: (e)=> {
+        console.log(e)
+      }
+      });
   }
 
   close() {

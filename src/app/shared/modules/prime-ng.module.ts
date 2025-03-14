@@ -17,6 +17,9 @@ import { ChipModule } from 'primeng/chip';
 import { KeyFilterModule } from 'primeng/keyfilter';
 import { InputOtpModule } from 'primeng/inputotp';
 import { DividerModule } from 'primeng/divider';
+import { ToggleSwitchModule } from 'primeng/toggleswitch';
+import { CardModule } from 'primeng/card';
+import { MessageModule } from 'primeng/message';
 
 
 @NgModule({
@@ -40,6 +43,9 @@ import { DividerModule } from 'primeng/divider';
     KeyFilterModule,
     InputOtpModule,
     DividerModule,
+    ToggleSwitchModule,
+    CardModule,
+    MessageModule,
   ],
   exports: [
     ButtonModule,
@@ -60,6 +66,9 @@ import { DividerModule } from 'primeng/divider';
     KeyFilterModule,
     InputOtpModule,
     DividerModule,
+    ToggleSwitchModule,
+    CardModule,
+    MessageModule,
   ],
 })
 export class PrimeNgModule {}

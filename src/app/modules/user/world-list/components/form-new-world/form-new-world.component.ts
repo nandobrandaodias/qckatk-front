@@ -16,9 +16,7 @@ export class FormNewWorldComponent {
   @Output() closeEvent = new EventEmitter<boolean>();
   worldsService = inject(WorldsService);
   worldForm: FormGroup;
-  description: string;
-  system: string;
-  public: boolean = true;
+  hasPassword: boolean = false;
 
   ngOnInit(){
     this.startWorldForm()
@@ -30,6 +28,7 @@ export class FormNewWorldComponent {
         name: new FormControl('', [Validators.required]),
         description: new FormControl(''),
         system: new FormControl(''),
+        password: new FormControl(''),
         public: new FormControl(true, [Validators.required]),
       }
     );
@@ -46,6 +45,10 @@ export class FormNewWorldComponent {
           this.refreshEvent.emit();
         },
       });
+  }
+
+  togglePassword(){
+    this.worldForm.get('password')?.setValue('')
   }
 
   close() {

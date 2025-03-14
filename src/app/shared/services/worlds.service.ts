@@ -12,8 +12,8 @@ export class WorldsService {
     return this.http.post(`${API_URL}/worlds`, payload)
   }
 
-  join(code: string, payload: any){
-    return this.http.post(`${API_URL}/worlds/join/${code}`, payload)
+  join(id: string, payload: any){
+    return this.http.post(`${API_URL}/worlds/join/${id}`, payload)
   }
 
   list(){

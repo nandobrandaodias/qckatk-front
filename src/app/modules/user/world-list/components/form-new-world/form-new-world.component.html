@@ -30,6 +30,23 @@
       <input pInputText id="sistema" aria-describedby="descricao-help" formControlName="system"/>
     </div>
   </div>
+  
+  <div class="my-4">
+    <div class="flex flex-col gap-2">
+      <app-label name="hasPassword" description="Possui senha?" [required]="false" />
+      <p-toggleswitch [(ngModel)]="hasPassword" [ngModelOptions]="{standalone: true}"
+      (ngModelChange)="togglePassword()"/>
+    </div>
+  </div>
+
+  @if(hasPassword){
+    <div class="my-4">
+      <div class="flex flex-col gap-2">
+        <app-label name="password" description="Senha" [required]="false" />
+        <input pInputText id="senha" aria-describedby="descricao-help" formControlName="password"/>
+      </div>
+    </div>
+  }
 
   <div class="my-4">
     <p-togglebutton formControlName="public" onLabel="Público" offLabel="Privado" styleClass="w-24"

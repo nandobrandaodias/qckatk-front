@@ -18,7 +18,6 @@ export class LoginComponent{
       username: new FormControl('', [Validators.required, Validators.minLength(5)]),
       password: new FormControl('', [Validators.required, Validators.minLength(5)])
   })
-    console.log(this.loginForm)
   }
 
   ngOnInit(){

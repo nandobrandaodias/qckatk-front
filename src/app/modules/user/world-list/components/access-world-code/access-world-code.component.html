@@ -2,31 +2,79 @@
   header="Acessar mundo por Código"
   [modal]="true"
   [(visible)]="visible"
-  [style]="{ width: '25rem' }"
+  [style]="{ width: '95%', maxWidth: '864px' }"
   closable="false"
-> 
-<form [formGroup]="worldForm" (ngSubmit)="enterWorld()">
-  <div class="mb-2">
-    <div class="flex justify-center">
-      <p-inputotp formControlName="code" [length]="6"
-      (ngModelChange)="searchWorld()"/>
+>
+  <form [formGroup]="worldForm" (ngSubmit)="enterWorld()">
+    <div class="mb-2">
+      <div class="flex justify-center">
+        <p-inputotp
+          formControlName="code"
+          [length]="6"
+          (ngModelChange)="searchWorld()"
+        />
+      </div>
     </div>
-  </div>
 
-  <p-divider />
+    <p-divider />
 
-  @if(notFound){ 
+    @if(notFound){
     <h2 class="text-xl font-bold my-5">Nenhum mundo encontrado...</h2>
-  }
+    } @if(world){
+    <p-card [style]="{ width: '100%', overflow: 'hidden', boxShadow: 'none', padding: 0 }">
+      <ng-template #header>
+        <img
+          alt="Card"
+          class="w-32 h-32 block ml-4 rounded-lg"
+          src="https://primefaces.org/cdn/primeng/images/card-ng.jpg"
+        />
+      </ng-template>
+      <ng-template #title>
+        <h2 class="text-2xl font-bold my-0">{{ world?.name | titlecase }}
+          <p-chip [label]="world.public ? 'Público' : 'Privado'" class="text-white"
+          [styleClass]="'text-sm ml-2'"
+          [ngClass]="world.public ? ' bg-green-500 ': ' bg-blue-600'"/>
+        </h2>
+      </ng-template>
+        <p>
+          <span class="font-bold">Sistema: </span>{{(world?.system | titlecase) || "-"}}
+        </p>
+        <p>
+          <span class="font-bold">Criador: </span>{{(world?.user.username | titlecase) || "-"}}
+        </p>
+        <p>
+          {{world?.description || "Nenhuma descrição disponível..."}}
+        </p>
+    </p-card>
+    }
 
-  @if(world){
-    <h2 class="text-xl font-bold my-3">{{world?.name}}</h2>
-  }
+    <p-divider />
 
-  <div class="flex justify-end gap-2">
-    <p-button label="Cancelar" severity="secondary" (click)="close()" />
-    <p-button label="Acessar"/>
-  </div>
-  <p-toast />
-</form>
+    @if(world?.password && !world?.allowed_user){
+    <div class="my-4">
+      <div class="flex flex-col gap-2">
+        <app-label name="password" description="Senha" [required]="false" />
+        <input
+          pInputText
+          id="senha"
+          aria-describedby="descricao-help"
+          [(ngModel)]="password"
+          [ngModelOptions]="{ standalone: true }"
+        />
+      </div>
+    </div>
+    }
+
+    @if(world && world?.allowed_user){
+      <div class="mt-4">
+        <p-message severity="success">Você possui acesso ao mundo!</p-message>
+      </div>
+    }
+
+    <div class="mt-4">
+      <p-button label="Acessar" fluid styleClass="mb-3" type="submit"/>
+      <p-button fluid label="Cancelar" severity="secondary" (click)="close()" />
+    </div>
+    <p-toast />
+  </form>
 </p-dialog>
