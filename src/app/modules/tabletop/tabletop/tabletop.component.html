@@ -1,1 +1,21 @@
-<p>tabletop works!</p>
+<div class="screen">
+  <section class="w-6/12 h-full bg-white rounded-r-md">
+    <div class="chat">
+      @for (msg of messages; track $index) {
+      <div class="message" [ngClass]="{' my-message ' : checkMessageUser(msg)}">
+        <p class="m-0 text-white">
+          @if(!checkMessageUser(msg)){
+          <span class="font-bold text-zinc-800 mr-1">{{msg.user.username}}:</span>
+          }
+          {{ msg.content }}
+        </p>
+      </div>
+      }
+    </div>
+    <div class="h-auto">
+      <input fluid type="text" pInputText [(ngModel)]="msg" [ngModelOptions]="{standalone: true}"
+      placeholder="Digite sua mensagem..."/>
+      <p-button fluid label="Enviar" (click)="sendNewMessage()" />
+    </div>
+  </section>
+</div>

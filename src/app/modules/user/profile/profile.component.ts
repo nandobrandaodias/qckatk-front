@@ -1,8 +1,9 @@
+import { SharedModule } from '@/app/shared/modules/shared.module';
 import { Component } from '@angular/core';
 
 @Component({
   selector: 'app-profile',
-  imports: [],
+  imports: [SharedModule],
   templateUrl: './profile.component.html',
   styleUrl: './profile.component.css'
 })

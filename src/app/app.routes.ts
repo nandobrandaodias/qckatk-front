@@ -22,11 +22,11 @@ export const routes: Routes = [
             },
             {
                 path: 'meu-perfil',
-                loadComponent: ()=>import('./modules/user/home/home.component').then((m) => m.HomeComponent)
+                loadComponent: ()=>import('./modules/user/profile/profile.component').then((m) => m.ProfileComponent)
             },
             {
                 path: 'meus-mundos',
-                loadComponent: ()=>import('./modules/user/home/home.component').then((m) => m.HomeComponent)
+                loadComponent: ()=>import('./modules/user/my-worlds/my-worlds.component').then((m) => m.MyWorldsComponent)
             },
             {
                 path: 'tabletop/:id',

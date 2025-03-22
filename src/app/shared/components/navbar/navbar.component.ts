@@ -3,7 +3,6 @@ import { SharedModule } from '../../modules/shared.module';
 import { LoginComponent } from "../../../modules/landing-page/main/components/login/login.component";
 import { AuthService } from '../../modules/auth/auth.service';
 import { Router } from '@angular/router';
-
 @Component({
   selector: 'app-navbar',
   imports: [SharedModule, LoginComponent],
@@ -13,6 +12,7 @@ import { Router } from '@angular/router';
 export class NavbarComponent {
   router = inject(Router)
   authService = inject(AuthService)
+  logo: any
   showLogin: boolean = false;
   items: any[] = [
     {

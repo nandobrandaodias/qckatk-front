@@ -1,7 +1,9 @@
 <main>
   <app-navbar />
   <section class="mx-auto mt-12 w-10/12 bg-white p-4 rounded-md">
-    <div class="mb-8 flex gap-x-4 flex-wrap">
+    <h3 class="text-4xl my-4 font-medium">Lista de Mundos</h3>
+    <p-divider/>
+    <div class="mb-8 flex gap-x-3 flex-wrap flex-row-reverse">
       <button pButton class="btn-primary" (click)="openWorldDialog('form')">
         <span class="pi pi-plus"></span>
         Novo Mundo
@@ -31,11 +33,10 @@
                   <th>Criador</th>
                   <th>Visibilidade</th>
                   <th>Sistema</th>
-                  <th>Ação</th>
               </tr>
           </ng-template>
           <ng-template #body let-world>
-              <tr class="cursor-pointer" (click)="selectWorld(world)">
+              <tr class="cursor-pointer" (click)="openWorldDialog('show', world.code)">
                   <td>{{ world.name }}</td>
                   <td>{{ world.user.username | titlecase }} </td>
                   <td>
@@ -43,19 +44,18 @@
                     [ngClass]="world.public ? ' bg-green-500 ': ' bg-blue-600 '"/>
                   </td>
                   <td>{{ world.system ?? "-" }}</td>
-                  <td [routerLink]="['/tabletop/', world._id]">Entrar</td>
               </tr>
+              <app-show-world
+              [world]="selected_world"
+              [visible]="visibleShowCode"
+              (closeEvent)="closeWorldDialog('show')"
+            />
           </ng-template>
-          <ng-template #emptymessage>
-            <tr>
-                <td colspan="4">Nenhum mundo encontrado...</td>
-            </tr>
-        </ng-template>
       </p-table>
       </article>
     }
     @else{
-      <h3 class="text-xl">Nenhum mundo criado até o momento...</h3>
+      <h3 class="text-xl">Nenhum mundo foi encontrado...</h3>
     }
   </section>
 </main>

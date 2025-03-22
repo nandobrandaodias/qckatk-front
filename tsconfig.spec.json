@@ -5,7 +5,7 @@
   "compilerOptions": {
     "paths": {
       "@/*": ["./src/*"],
-      "@media/*": ["./src/assets/*"],
+      "@assets/*": ["./src/assets/*"],
       "@shared/*": ["./src/app/shared/*"]
     },
     "outDir": "./out-tsc/spec",
