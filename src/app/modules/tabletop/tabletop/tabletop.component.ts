@@ -49,6 +49,7 @@ export class TabletopComponent implements OnInit{
   }
 
   sendNewMessage(){
+    if(!this.msg) return
     this.server.emit("message", {content: this.msg})
   }
 }

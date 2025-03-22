@@ -68,7 +68,7 @@ export class MyWorldsComponent {
     }
   }
   listWorld(){
-    this.worldsService.list().subscribe({
+    this.worldsService.listMine().subscribe({
       next: (res: any)=>{
         this.worlds = res
       }
