@@ -49,7 +49,7 @@ import { FileUploadModule } from 'primeng/fileupload';
     CardModule,
     MessageModule,
     DropdownModule,
-    FileUploadModule
+    FileUploadModule,
   ],
   exports: [
     ButtonModule,
@@ -74,7 +74,7 @@ import { FileUploadModule } from 'primeng/fileupload';
     CardModule,
     MessageModule,
     DropdownModule,
-    FileUploadModule
+    FileUploadModule,
   ],
 })
 export class PrimeNgModule {}

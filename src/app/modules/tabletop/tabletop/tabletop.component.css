@@ -9,8 +9,9 @@
     width: 100%;
     overflow-y: auto;
     padding: 12px;
-    row-gap: 12px;
     flex: 1 0;
+    border-top-right-radius: 8px;
+    border-bottom-right-radius: 8px;
 }
 
 .message {
@@ -28,3 +29,4 @@
     border-radius: 12px !important;
     border-top-right-radius: 0 !important;
 }
+ 
