@@ -20,6 +20,8 @@ import { DividerModule } from 'primeng/divider';
 import { ToggleSwitchModule } from 'primeng/toggleswitch';
 import { CardModule } from 'primeng/card';
 import { MessageModule } from 'primeng/message';
+import { DropdownModule } from 'primeng/dropdown';
+import { FileUploadModule } from 'primeng/fileupload';
 
 
 @NgModule({
@@ -46,6 +48,8 @@ import { MessageModule } from 'primeng/message';
     ToggleSwitchModule,
     CardModule,
     MessageModule,
+    DropdownModule,
+    FileUploadModule,
   ],
   exports: [
     ButtonModule,
@@ -69,6 +73,8 @@ import { MessageModule } from 'primeng/message';
     ToggleSwitchModule,
     CardModule,
     MessageModule,
+    DropdownModule,
+    FileUploadModule,
   ],
 })
 export class PrimeNgModule {}

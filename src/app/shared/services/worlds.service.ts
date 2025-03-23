@@ -20,6 +20,10 @@ export class WorldsService {
     return this.http.get(`${API_URL}/worlds`)
   }
 
+  listMine(){
+    return this.http.get(`${API_URL}/worlds/mine`)
+  }
+
   findByCode(code: string){
     return this.http.get(`${API_URL}/worlds/code/${code}`)
   }

@@ -1,62 +1,42 @@
-  .hero-section {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 2rem;
-    background-color: #f4f4f4;
-  }
-  
-  .hero-content {
-    max-width: 50%;
-  }
-  
-  .hero-content h1 {
-    font-size: 2.5rem;
-    color: #333;
-  }
-  
-  .hero-content p {
-    font-size: 1.2rem;
-    color: #666;
-  }
-  
-  .hero-image {
-    max-width: 45%;
-    border-radius: 10px;
-  }
-  
-  /* Features Section */
-  .features-section {
-    display: flex;
-    justify-content: space-around;
-    padding: 2rem;
-    background-color: #fff;
-  }
-  
-  .feature {
-    text-align: center;
-    max-width: 30%;
-  }
-  
-  .feature-image {
-    max-width: 100%;
-    border-radius: 10px;
-  }
-  
-  .feature h2 {
-    font-size: 1.8rem;
-    color: #333;
-  }
-  
-  .feature p {
-    font-size: 1rem;
-    color: #666;
-  }
-  
-  /* Footer */
-  footer {
-    text-align: center;
-    padding: 1rem;
-    background-color: #333;
-    color: #fff;
-  }
+.hero-section {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 2rem;
+  background-color: #f4f4f4;
+}
+
+.hero-content {
+  max-width: 50%;
+}
+
+.hero-image {
+  max-width: 45%;
+  border-radius: 10px;
+}
+
+.feature-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-evenly;
+  text-align: center;
+  background-color: white;
+  padding: 16px 8px;
+  border-radius: 8px;
+  transition-duration: 250ms;
+}
+
+.feature-card:hover {
+  scale: 1.05;
+}
+
+.feature-card h2 {
+  font-size: 1.75rem;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+.feature-card p {
+  color: black;
+  width: 75%;
+}

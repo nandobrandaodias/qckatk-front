@@ -34,6 +34,10 @@ export class AuthService {
     return headers
   }
 
+  userTokenString(){
+    return localStorage.getItem("access_token")
+  }
+
   userToken(): any{
     let user = localStorage.getItem("access_token")
     return user ? JSON.parse(user) : ""

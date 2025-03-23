@@ -1,7 +1,7 @@
-export interface World {
-    _id: string,
-    name: string,
-    banner: string,
-    description: string,
-    owner: any
+export class World {
+    _id: string;
+    name: string;
+    banner: string;
+    description: string;
+    owner: any;
   }

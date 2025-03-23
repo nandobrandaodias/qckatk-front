@@ -1,31 +1,27 @@
-import { Component, inject, OnInit } from '@angular/core';
-import { SharedModule } from '../../../shared/modules/shared.module';
-import { World } from '../../../shared/interfaces/world';
-import { FormNewWorldComponent } from './components/form-new-world/form-new-world.component';
-import { NavbarComponent } from '../../../shared/components/navbar/navbar.component';
-import { WorldsService } from '../../../shared/services/worlds.service';
-import { AccessWorldCodeComponent } from "./components/access-world-code/access-world-code.component";
-import { ShowWorldComponent } from "./components/show-world/show-world.component";
-
+import { Component, inject } from '@angular/core';
+import { NavbarComponent } from "../../../shared/components/navbar/navbar.component";
+import { SharedModule } from '@/app/shared/modules/shared.module';
+import { FormNewWorldComponent } from "../world-list/components/form-new-world/form-new-world.component";
+import { ShowWorldComponent } from "../world-list/components/show-world/show-world.component";
+import { WorldsService } from '@/app/shared/services/worlds.service';
+import { World } from '@/app/shared/interfaces/world';
 
 enum DialogType {
   Form = 'form',
-  Code = 'code',
   Show = 'show'
 }
-@Component({
-  selector: 'app-world-list',
-  imports: [SharedModule, FormNewWorldComponent, NavbarComponent, AccessWorldCodeComponent, ShowWorldComponent],
-  templateUrl: './world-list.component.html',
-  styleUrl: './world-list.component.css'
-})
 
-export class WorldListComponent implements OnInit{
+@Component({
+  selector: 'app-my-worlds',
+  imports: [NavbarComponent, SharedModule, FormNewWorldComponent, ShowWorldComponent],
+  templateUrl: './my-worlds.component.html',
+  styleUrl: './my-worlds.component.css'
+})
+export class MyWorldsComponent {
   selected_world: any;
   worldsService = inject(WorldsService)
   worlds: World[] = []
   visibleNewWorld: boolean = false;
-  visibleAccessCode: boolean = false;
   visibleShowCode: boolean = false;
 
   ngOnInit(): void {
@@ -38,9 +34,6 @@ export class WorldListComponent implements OnInit{
     switch (dialog) {
       case DialogType.Form:
         this.visibleNewWorld = true;
-        break;
-      case DialogType.Code:
-        this.visibleAccessCode = true;
         break;
       case DialogType.Show:
         if (code) {
@@ -66,9 +59,6 @@ export class WorldListComponent implements OnInit{
       case DialogType.Form:
         this.visibleNewWorld = false;
         break;
-      case DialogType.Code:
-        this.visibleAccessCode = false;
-        break;
       case DialogType.Show:
         this.visibleShowCode = false;
         break;
@@ -77,9 +67,8 @@ export class WorldListComponent implements OnInit{
         break;
     }
   }
-
   listWorld(){
-    this.worldsService.list().subscribe({
+    this.worldsService.listMine().subscribe({
       next: (res: any)=>{
         this.worlds = res
       }

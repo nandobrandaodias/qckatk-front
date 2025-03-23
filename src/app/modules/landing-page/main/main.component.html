@@ -1,26 +1,38 @@
 <main>
   <app-navbar />
 
-  <section class="hero-section">
-    <div class="hero-content">
-      <h1 class="text-5xl">Bem-vindo ao QuickAttack</h1>
-      <p class="text-2xl">O tabuleiro virtual que revoluciona o modo como você joga RPG.</p>
+  <section class="mt-6 py-4 flex justify-between mx-auto max-w-[1320px] align-middle">
+    <div class="hero-content d-flex flex-wrap pt-12">
+      <h1 class="text-6xl mb-2 font-medium">Bem-vindo ao QuickAttack</h1>
+      <p class="text-2xl my-3 text-zinc-600">O tabuleiro virtual que revoluciona o modo como você joga RPG.</p>
       <button pButton type="button" label="Comece Agora" class="p-button-primary"></button>
     </div>
-    <img alt="Hero Background" class="hero-image" />
+    <img alt="Hero Background" class="hero-image"  src="bg-dados.jpeg"/>
   </section>
   
-  <!-- Features Section -->
-  <section class="features-section">
-    <div class="feature">
-      <img src="assets/images/feature-rpg.jpg" alt="RPG Feature" class="feature-image">
-      <h2>Jogue RPG de Forma Intuitiva</h2>
-      <p>Com QuickAttack, você pode criar e gerenciar suas campanhas de RPG de forma fácil e divertida.</p>
+  <section class="py-4 mt-6 flex justify-between mx-auto max-w-[1320px] align-middle">
+    <div class="feature-card">
+      <span class="pi pi-plus" style="font-size: 2.5rem;"></span>
+      <i class="pi pi-check" class="mb-4" style="font-size: 3rem"></i>
+      <h2>Rolagem de Dados</h2>
+      <p>Simule rolagens realistas e personalize seus dados.</p>
+      <a href="#" class="text-blue-400 mt-2 hover:underline">Personalize agora!</a>
     </div>
-    <div class="feature">
-      <img src="assets/images/feature-virtual.jpg" alt="Virtual Feature" class="feature-image">
-      <h2>Tabuleiro Virtual Completo</h2>
-      <p>Nosso tabuleiro virtual oferece todas as ferramentas que você precisa para uma experiência imersiva.</p>
+
+    <div class="feature-card">
+      <span class="pi pi-plus" style="font-size: 2.5rem;"></span>
+      <i class="pi pi-check" class="mb-4"style="font-size: 3rem"></i>
+      <h2>Jogue com Amigos</h2>
+      <p>Conecte-se com jogadores ao redor do mundo.</p>
+      <a href="#" class="text-blue-400 mt-2 hover:underline">Convidar Amigos</a>
+    </div>
+
+    <div class="feature-card">
+      <span class="pi pi-plus" style="font-size: 2.5rem;"></span>
+      <i class="pi pi-check" class="mb-4"style="font-size: 3rem"></i>
+      <h2>Mapas Interativos</h2>
+      <p>Crie e explore mapas dinâmicos para sua campanha.</p>
+      <a href="#" class="text-blue-400 mt-2 hover:underline">Saiba mais</a>
     </div>
   </section>
 </main>
