@@ -15,6 +15,7 @@ export class TabletopComponent implements OnInit{
   route: ActivatedRoute = inject(ActivatedRoute)
   authService: AuthService = inject(AuthService)
   world_id: string;
+  menu: boolean = false;
   server: Socket;
   user: any
   msg = ''
@@ -51,5 +52,9 @@ export class TabletopComponent implements OnInit{
   sendNewMessage(){
     if(!this.msg) return
     this.server.emit("message", {content: this.msg})
+  }
+
+  toggleMenu(){
+    this.menu = !this.menu
   }
 }

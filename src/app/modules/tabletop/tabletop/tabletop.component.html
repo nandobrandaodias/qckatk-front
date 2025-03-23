@@ -1,5 +1,14 @@
 <div class="screen">
-  <section class="w-6/12 h-full bg-white rounded-r-md">
+  <aside class="z-10 bg-white absolute h-screen duration-100"
+  [ngClass]="menu ? ' w-3/12 min-w-64' : ' w-16 '">
+  <section class="w-full bg-white rounded-r-md flex flex-col h-full p-2"
+  [ngClass]="!menu ? ' items-start ' :'' ">
+  <div class="w-full">
+    <button (click)="toggleMenu()" class="pt-3 ml-4 h-12 flex-grow-0 flex-shrink-0">
+      <i class="pi pi-bars"></i>
+    </button>
+  </div>
+  @if(menu){
     <div class="chat">
       @for (msg of messages; track $index) {
       <div class="message" [ngClass]="{' my-message ' : checkMessageUser(msg)}">
@@ -12,10 +21,12 @@
       </div>
       }
     </div>
-    <div class="h-auto">
+    <div class="w-full">
       <input fluid type="text" pInputText [(ngModel)]="msg" [ngModelOptions]="{standalone: true}"
-      placeholder="Digite sua mensagem..."/>
+      placeholder="Digite sua mensagem..." maxlength="255"/>
       <p-button fluid label="Enviar" (click)="sendNewMessage()" />
     </div>
-  </section>
+  }
+</section>
+</aside>
 </div>

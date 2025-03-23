@@ -12,9 +12,14 @@ import { Router } from '@angular/router';
 export class NavbarComponent {
   router = inject(Router)
   authService = inject(AuthService)
+  user = this.authService.userToken()
   logo: any
   showLogin: boolean = false;
   items: any[] = [
+    {
+      label: this.user.username,
+    },
+    {separator: true},
     {
       label: 'Opções',
       items: [

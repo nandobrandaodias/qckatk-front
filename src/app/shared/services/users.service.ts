@@ -24,4 +24,8 @@ export class UsersService {
       }
     })
   }
+
+  getUserInfo(){
+    return this.http.get(`${API_URL}/users/me`)
+  }
 }
