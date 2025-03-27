@@ -18,9 +18,10 @@
 
     <p-divider />
 
-    @if(notFound){
+    @if(notFound && !loadingWorld){
     <h2 class="text-xl font-bold my-5">Nenhum mundo encontrado...</h2>
-    } @if(world){
+    } 
+    @else if(world && !loadingWorld){
     <p-card [style]="{ width: '100%', overflow: 'hidden', boxShadow: 'none', padding: 0 }">
       <ng-template #header>
         <img
@@ -37,6 +38,9 @@
         </h2>
       </ng-template>
         <p>
+          <span class="font-bold">Código: </span>{{(world?.code | uppercase) || "-"}}
+        </p>
+        <p>
           <span class="font-bold">Sistema: </span>{{(world?.system | titlecase) || "-"}}
         </p>
         <p>
@@ -47,7 +51,11 @@
         </p>
     </p-card>
     }
-
+    @else if (loadingWorld){
+      <div class="flex justify-center">
+        <p-progress-spinner ariaLabel="loading" />
+      </div>
+    }
     <p-divider />
 
     @if(world?.password && !world?.allowed_user){
@@ -72,7 +80,9 @@
     }
 
     <div class="mt-4">
-      <p-button label="Acessar" fluid styleClass="mb-3" type="submit"/>
+      @if(world){
+        <p-button label="Acessar" fluid styleClass="mb-3" type="submit"/>
+      }
       <p-button fluid label="Cancelar" severity="secondary" (click)="close()" />
     </div>
     <p-toast />

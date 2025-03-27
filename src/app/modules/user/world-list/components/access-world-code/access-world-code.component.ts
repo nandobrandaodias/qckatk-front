@@ -17,6 +17,7 @@ export class AccessWorldCodeComponent {
   @Output() closeEvent = new EventEmitter<boolean>();
   worldsService = inject(WorldsService);
   router = inject(Router);
+  loadingWorld: boolean = false
   worldForm: FormGroup;
   world: any = ''
   notFound: boolean = false
@@ -35,19 +36,17 @@ export class AccessWorldCodeComponent {
       this.world = ''
       return
     }
-
+    this.loadingWorld = true
     this.notFound = false
-
+    
     this.worldsService.findByCode(this.worldForm.value.code).subscribe({
       next: (res: any)=> {
-        if(!res){
-          this.notFound = true;
-          return
-        }
-        this.world = res;
-        this.notFound = false
+        this.world = res || null;
+        this.notFound = !res;
+        this.loadingWorld = false;
       },
       error: () => {
+        this.loadingWorld = false
         console.log("Um erro ocorreu!")
       }
     })

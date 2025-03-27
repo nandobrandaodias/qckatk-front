@@ -22,6 +22,8 @@ import { CardModule } from 'primeng/card';
 import { MessageModule } from 'primeng/message';
 import { DropdownModule } from 'primeng/dropdown';
 import { FileUploadModule } from 'primeng/fileupload';
+import { TagModule } from 'primeng/tag';
+import { ProgressSpinnerModule } from 'primeng/progressspinner';
 
 
 @NgModule({
@@ -50,6 +52,8 @@ import { FileUploadModule } from 'primeng/fileupload';
     MessageModule,
     DropdownModule,
     FileUploadModule,
+    TagModule,
+    ProgressSpinnerModule
   ],
   exports: [
     ButtonModule,
@@ -75,6 +79,8 @@ import { FileUploadModule } from 'primeng/fileupload';
     MessageModule,
     DropdownModule,
     FileUploadModule,
+    TagModule,
+    ProgressSpinnerModule
   ],
 })
 export class PrimeNgModule {}

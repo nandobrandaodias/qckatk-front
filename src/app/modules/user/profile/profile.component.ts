@@ -1,6 +1,5 @@
 import { SharedModule } from '@/app/shared/modules/shared.module';
 import { Component, inject } from '@angular/core';
-import { LabelComponent } from "../../../shared/components/label/label.component";
 import { NavbarComponent } from "../../../shared/components/navbar/navbar.component";
 import { UsersService } from '@/app/shared/services/users.service';
 

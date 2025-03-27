@@ -23,6 +23,9 @@
         </h2>
       </ng-template>
         <p>
+          <span class="font-bold">Código: </span>{{(world?.code | uppercase) || "-"}}
+        </p>
+        <p>
           <span class="font-bold">Sistema: </span>{{(world?.system | titlecase) || "-"}}
         </p>
         <p>

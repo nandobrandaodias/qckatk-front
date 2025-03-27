@@ -1,17 +1,12 @@
 <div class="screen">
-  <aside
-    class="z-10 bg-white absolute h-screen duration-100 rounded-tr-lg rounded-br-lg"
-    [ngClass]="menu ? ' w-3/12 min-w-64' : ' w-16 '"
+  <aside class="aside-chat" [ngClass]="menu ? ' w-3/12 min-w-64 h-screen ' : ' w-16 h-auto'"
   >
     <section
       class="w-full bg-white rounded-r-md flex flex-col h-full p-2"
       [ngClass]="!menu ? ' items-start ' : ''"
     >
       <div class="w-full flex items-center pl-4">
-        <button
-          (click)="toggleMenu()"
-          class="h-12 flex-grow-0 flex-shrink-0"
-        >
+        <button (click)="toggleMenu()" class="h-12">
           <i class="pi pi-bars"></i>
         </button>
       </div>
@@ -24,7 +19,7 @@
         >
           <p class="m-0 text-white">
             @if(!checkMessageUser(msg)){
-            <span class="font-bold text-zinc-800 mr-1"
+            <span class="font-bold text-white mr-1"
               >{{ msg.user.username }}:</span
             >
             }
@@ -47,5 +42,19 @@
       </div>
       }
     </section>
+  </aside>
+
+  <aside class="aside-tools">
+    <div class="tools">
+      <button class="h-12 w-full">
+        <i class="pi pi-send"></i>
+      </button>
+      <button class="h-12 w-full">
+        <i class="pi pi-sliders-v"></i>
+      </button>
+      <button (click)="exitWorld()" class="h-12 w-full">
+        <i class="pi pi-sign-out"></i>
+      </button>
+    </div>
   </aside>
 </div>

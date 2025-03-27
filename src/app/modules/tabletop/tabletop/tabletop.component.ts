@@ -1,9 +1,9 @@
 import { AuthService } from '@/app/shared/modules/auth/auth.service';
 import { SharedModule } from '@/app/shared/modules/shared.module';
 import { API_URL } from '@/environments/environment';
-import { Component, inject, Input, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { Component, inject, Input, OnInit } from '@angular/core';;
 import { io, Socket } from 'socket.io-client'
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'app-tabletop',
@@ -12,7 +12,8 @@ import { io, Socket } from 'socket.io-client'
   styleUrl: './tabletop.component.css'
 })
 export class TabletopComponent implements OnInit{
-  route: ActivatedRoute = inject(ActivatedRoute)
+  router = inject(Router)
+  activatedRoute: ActivatedRoute = inject(ActivatedRoute)
   authService: AuthService = inject(AuthService)
   world_id: string;
   menu: boolean = false;
@@ -22,7 +23,7 @@ export class TabletopComponent implements OnInit{
   messages: any[] = []
 
   ngOnInit(): void {
-    this.world_id = this.route.snapshot.params["id"];
+    this.world_id = this.activatedRoute.snapshot.params["id"];
     this.user = this.authService.userToken()
     this.server = io(`${API_URL}/tabletop`, {
       auth: this.authService.userToken(),
@@ -38,6 +39,7 @@ export class TabletopComponent implements OnInit{
       console.log(res)
     });
     this.server.on('newMessage', (res)=>this.handleNewMessage(res))
+    this.server.on('disconnect', ()=>this.exitWorld())
   }
 
   checkMessageUser(msg: any){
@@ -56,5 +58,9 @@ export class TabletopComponent implements OnInit{
 
   toggleMenu(){
     this.menu = !this.menu
+  }
+
+  exitWorld(){
+    this.router.navigate(['/'])
   }
 }

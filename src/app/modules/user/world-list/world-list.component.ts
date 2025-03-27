@@ -21,9 +21,10 @@ enum DialogType {
 })
 
 export class WorldListComponent implements OnInit{
-  selected_world: any;
   worldsService = inject(WorldsService)
-  worlds: World[] = []
+  selected_world: any;
+  worlds: World[] = [];
+  loadingWorlds: boolean = false;
   visibleNewWorld: boolean = false;
   visibleAccessCode: boolean = false;
   visibleShowCode: boolean = false;
@@ -79,9 +80,15 @@ export class WorldListComponent implements OnInit{
   }
 
   listWorld(){
+    this.loadingWorlds = true
     this.worldsService.list().subscribe({
       next: (res: any)=>{
-        this.worlds = res
+        this.worlds = res;
+        this.loadingWorlds = false
+      },
+      error: (e) => {
+        console.log('Erro!')
+        this.loadingWorlds = false
       }
     })
   }

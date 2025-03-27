@@ -18,9 +18,10 @@ enum DialogType {
   styleUrl: './my-worlds.component.css'
 })
 export class MyWorldsComponent {
-  selected_world: any;
   worldsService = inject(WorldsService)
+  selected_world: any;
   worlds: World[] = []
+  loadingWorlds: boolean = true;
   visibleNewWorld: boolean = false;
   visibleShowCode: boolean = false;
 
