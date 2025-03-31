@@ -1,6 +1,6 @@
 <div class="screen">
-  <aside class="aside-chat" [ngClass]="menu ? ' w-3/12 min-w-64 h-screen ' : ' w-16 h-auto'"
-  >
+  <!-- Left chat sidebar -->
+  <aside class="aside-chat" [ngClass]="menu ? ' w-3/12 min-w-64 h-screen ' : ' w-16 h-auto'">
     <section
       class="w-full bg-white rounded-r-md flex flex-col h-full p-2"
       [ngClass]="!menu ? ' items-start ' : ''"
@@ -44,10 +44,46 @@
     </section>
   </aside>
 
+  <!-- board  -->
+  <div class="board-container">
+    <div class="grid-board" #gridBoard>
+      <!-- Grid dinamico -->
+      @for (row of gridRows; track $index) {
+        <div class="grid-row">
+          @for (col of gridCols; track $index) {
+            <div 
+              class="grid-cell" 
+              [attr.data-row]="row" 
+              [attr.data-col]="col"
+              (click)="handleCellClick(row, col)"
+            ></div>
+          }
+        </div>
+      }
+      
+      <!-- tokens -->
+      @for (token of tokens; track token.id) {
+        <div 
+          class="token" 
+          [ngClass]="token.type" 
+          [style.top.px]="token.position.y" 
+          [style.left.px]="token.position.x"
+          (mousedown)="startDragging($event, token)"
+        >
+          {{ token.label }}
+        </div>
+      }
+    </div>
+  </div>
+
+  <!-- Right tools sidebar -->
   <aside class="aside-tools">
     <div class="tools">
-      <button class="h-12 w-full">
-        <i class="pi pi-send"></i>
+      <button class="h-12 w-full" (click)="addToken('character')">
+        <i class="pi pi-user"></i>
+      </button>
+      <button class="h-12 w-full" (click)="addToken('monster')">
+        <i class="pi pi-shield"></i>
       </button>
       <button class="h-12 w-full">
         <i class="pi pi-sliders-v"></i>
