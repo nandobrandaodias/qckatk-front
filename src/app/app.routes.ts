@@ -17,7 +17,7 @@ export const routes: Routes = [
 
             },        
             {
-                path: 'list',
+                path: 'mundos',
                 loadComponent: ()=>import('./modules/user/world-list/world-list.component').then((m) => m.WorldListComponent)
             },
             {

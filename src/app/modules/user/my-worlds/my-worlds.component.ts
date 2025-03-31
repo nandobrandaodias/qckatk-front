@@ -21,7 +21,7 @@ export class MyWorldsComponent {
   worldsService = inject(WorldsService)
   selected_world: any;
   worlds: World[] = []
-  loadingWorlds: boolean = true;
+  loadingWorlds: boolean = false;
   visibleNewWorld: boolean = false;
   visibleShowCode: boolean = false;
 
@@ -69,9 +69,15 @@ export class MyWorldsComponent {
     }
   }
   listWorld(){
+    this.loadingWorlds = true
     this.worldsService.listMine().subscribe({
       next: (res: any)=>{
         this.worlds = res
+        this.loadingWorlds = false
+      },
+      error: (e)=> {
+        console.log(e)
+        this.loadingWorlds = false
       }
     })
   }

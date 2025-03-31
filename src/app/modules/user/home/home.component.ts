@@ -32,6 +32,7 @@ export class HomeComponent {
   loadingUserData: boolean = false
   selected_world: any = '';
   visibleShowCode: boolean = false
+  defaultImage = 'not_found.svg'
   
   ngOnInit(): void {
     this.loadUserData()
@@ -101,6 +102,7 @@ export class HomeComponent {
       next: (res) => {
         this.loadingUserData = false
         this.user = res
+        this.user.image = this.user.image ?? this.defaultImage
       },
       error: (e) => {
         this.loadingUserData = false
