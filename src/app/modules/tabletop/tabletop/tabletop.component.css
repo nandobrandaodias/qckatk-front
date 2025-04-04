@@ -18,7 +18,7 @@
 
 .aside-chat {
   background-color: white;
-  z-index: 10;
+  z-index: 99;
   position: absolute;
   transition-duration: 200ms;
   border-top-right-radius: 0.5rem;
@@ -101,7 +101,7 @@
   align-items: center;
   font-weight: bold;
   color: white;
-  cursor: move;
+  cursor: pointer;
   user-select: none;
   transition: transform 0.1s;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);

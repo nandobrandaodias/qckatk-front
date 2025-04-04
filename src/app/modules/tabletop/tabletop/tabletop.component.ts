@@ -48,7 +48,7 @@ export class TabletopComponent implements OnInit, OnDestroy, AfterViewInit {
   msg: string = '';
   messages: any[] = [];
   
-  // Grid configuration
+  // Grid
   gridRows: number[] = Array.from({ length: 15 }, (_, i) => i);
   gridCols: number[] = Array.from({ length: 20 }, (_, i) => i);
   cellSize: number = 50;
@@ -76,12 +76,12 @@ export class TabletopComponent implements OnInit, OnDestroy, AfterViewInit {
   }
   
   ngAfterViewInit(): void {
-    // Request current board state after view is initialized
+    // pegar estado do board
     this.server.emit('getBoardState', this.world_id);
   }
   
   ngOnDestroy(): void {
-    // Clean up socket connection
+    // limpar conexao websocket
     if (this.server) {
       this.server.disconnect();
     }
@@ -90,7 +90,7 @@ export class TabletopComponent implements OnInit, OnDestroy, AfterViewInit {
   startEventListeners() {
     this.server.on('user_connected', (res) => {
       console.log('User connected:', res);
-      // When a new user connects, emit the current board state
+      // enviar estado do board para novos usuarios
       if (this.tokens.length > 0) {
         this.server.emit('updateBoardState', {
           room: this.world_id,
@@ -103,7 +103,7 @@ export class TabletopComponent implements OnInit, OnDestroy, AfterViewInit {
     
     this.server.on('disconnect', () => this.exitWorld());
     
-    // Board-specific events
+    // eventos board
     this.server.on('boardState', (state) => this.handleBoardState(state));
     
     this.server.on('tokenAdded', (token) => this.handleTokenAdded(token));
@@ -112,18 +112,16 @@ export class TabletopComponent implements OnInit, OnDestroy, AfterViewInit {
     
     this.server.on('tokenRemoved', (tokenId: string) => this.handleTokenRemoved(tokenId));
 
-    // Listen for the board initialization flag
+    // ver criacao do board
     this.server.on('boardInitialized', (isInitialized: boolean) => {
       this.boardInitialized = isInitialized;
       if (!isInitialized) {
-        // If the board isn't initialized, this client is the first one,
-        // so add the initial tokens
         this.addInitialTokens();
       }
     });
   }
   
-  // Chat-related methods
+  // metodos chat
   checkMessageUser(msg: any) {
     if (msg.user.username == this.user.username) return true;
     return false;
@@ -147,7 +145,7 @@ export class TabletopComponent implements OnInit, OnDestroy, AfterViewInit {
     this.router.navigate(['/']);
   }
   
-  // Board-related methods
+  // metodos board
   handleBoardState(state: any) {
     console.log('Received board state:', state);
     if (state && state.tokens && Array.isArray(state.tokens)) {
@@ -157,7 +155,7 @@ export class TabletopComponent implements OnInit, OnDestroy, AfterViewInit {
   
   handleTokenAdded(token: Token) {
     console.log('Token added:', token);
-    // Check if token already exists
+    // ver se ja existe tokens
     const existingIndex = this.tokens.findIndex(t => t.id === token.id);
     if (existingIndex === -1) {
       this.tokens = [...this.tokens, token];
@@ -168,7 +166,7 @@ export class TabletopComponent implements OnInit, OnDestroy, AfterViewInit {
     console.log('Token moved:', event);
     const tokenIndex = this.tokens.findIndex(t => t.id === event.tokenId);
     if (tokenIndex >= 0) {
-      // Create a new array to ensure change detection
+      // criar array para confirmar mudanca
       const updatedTokens = [...this.tokens];
       updatedTokens[tokenIndex] = {
         ...updatedTokens[tokenIndex],
@@ -183,9 +181,8 @@ export class TabletopComponent implements OnInit, OnDestroy, AfterViewInit {
     this.tokens = this.tokens.filter(t => t.id !== tokenId);
   }
   
-  // Add random character and monster tokens as examples
+  // exemplo de tokens para teste
   addInitialTokens() {
-    // Add a character token
     const characterToken: Token = {
       id: `character-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
       type: 'character',
@@ -199,7 +196,6 @@ export class TabletopComponent implements OnInit, OnDestroy, AfterViewInit {
       ownerId: this.user.id
     };
     
-    // Add a monster token
     const monsterToken: Token = {
       id: `monster-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
       type: 'monster',
@@ -215,15 +211,14 @@ export class TabletopComponent implements OnInit, OnDestroy, AfterViewInit {
     
     this.tokens = [characterToken, monsterToken];
     
-    // Emit token addition events to server
+    // enviar cricao de tokens pro server
     this.server.emit('addToken', { token: characterToken, room: this.world_id });
     this.server.emit('addToken', { token: monsterToken, room: this.world_id });
     
-    // Mark the board as initialized
+    // marca iniciacao do board
     this.server.emit('initializeBoard', { room: this.world_id });
   }
   
-  // Add new token at default position
   addToken(type: 'character' | 'monster' | 'item') {
     const newToken: Token = {
       id: `${type}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
@@ -240,26 +235,21 @@ export class TabletopComponent implements OnInit, OnDestroy, AfterViewInit {
     
     this.tokens = [...this.tokens, newToken];
     
-    // Emit token addition event to server
     this.server.emit('addToken', { token: newToken, room: this.world_id });
   }
   
-  // Token dragging functionality
+  // movimentacao token
+  cursorPosition = { x: 0, y: 0 };
+  
   startDragging(event: MouseEvent, token: Token) {
-    // Only allow dragging tokens owned by the current user
     if (token.ownerId !== this.user.id) return;
     
-    this.draggingToken = { ...token };
-    
-    const tokenElement = event.target as HTMLElement;
-    const rect = tokenElement.getBoundingClientRect();
-    
-    this.dragOffset = {
-      x: event.clientX - rect.left,
-      y: event.clientY - rect.top
-    };
-    
-    event.preventDefault();
+    if (this.draggingToken) {
+      this.dropToken(event);
+    } else {
+      this.draggingToken = { ...token };
+      event.preventDefault();
+    }
   }
   
   @HostListener('document:mousemove', ['$event'])
@@ -268,26 +258,25 @@ export class TabletopComponent implements OnInit, OnDestroy, AfterViewInit {
     
     const boardRect = this.gridBoardRef.nativeElement.getBoundingClientRect();
     
-    // Calculate position relative to the board
-    const x = event.clientX - boardRect.left - this.dragOffset.x;
-    const y = event.clientY - boardRect.top - this.dragOffset.y;
+    const x = event.clientX - boardRect.left;
+    const y = event.clientY - boardRect.top;
     
-    // Calculate grid coordinates
+    this.cursorPosition = { x, y };
+    
     const col = Math.floor(x / this.cellSize);
     const row = Math.floor(y / this.cellSize);
     
-    // Ensure the token stays within the grid boundaries
+    // manter dentro do grid
     if (col >= 0 && col < this.gridCols.length && row >= 0 && row < this.gridRows.length) {
-      // Create a new token object to ensure change detection
       const updatedToken = { ...this.draggingToken };
       updatedToken.position = {
-        x: col * this.cellSize + (this.cellSize - 45) / 2,
-        y: row * this.cellSize + (this.cellSize - 45) / 2,
+        x: x - this.cellSize / 2,
+        y: y - this.cellSize / 2,
         row: row,
         col: col
       };
       
-      // Update the token in the tokens array
+      // Update do token no tokens array
       const tokenIndex = this.tokens.findIndex(t => t.id === updatedToken.id);
       if (tokenIndex >= 0) {
         const updatedTokens = [...this.tokens];
@@ -298,23 +287,40 @@ export class TabletopComponent implements OnInit, OnDestroy, AfterViewInit {
     }
   }
   
-  @HostListener('document:mouseup')
-  onMouseUp() {
-    if (this.draggingToken) {
-      // Emit token moved event with room information
-      this.server.emit('moveToken', {
-        tokenId: this.draggingToken.id,
-        position: this.draggingToken.position,
-        room: this.world_id
-      });
+  dropToken(event: MouseEvent) {
+    if (!this.draggingToken || !this.gridBoardRef) return;
+    
+    const boardRect = this.gridBoardRef.nativeElement.getBoundingClientRect();
+    const x = event.clientX - boardRect.left;
+    const y = event.clientY - boardRect.top;
+    
+    const col = Math.floor(x / this.cellSize);
+    const row = Math.floor(y / this.cellSize);
+    
+    if (col >= 0 && col < this.gridCols.length && row >= 0 && row < this.gridRows.length) {
+      // grudar no grid
+      const updatedToken = { ...this.draggingToken };
+      updatedToken.position = {
+        x: col * this.cellSize + (this.cellSize - 45) / 2,
+        y: row * this.cellSize + (this.cellSize - 45) / 2,
+        row: row,
+        col: col
+      };
       
-      this.draggingToken = null;
+      const tokenIndex = this.tokens.findIndex(t => t.id === updatedToken.id);
+      if (tokenIndex >= 0) {
+        const updatedTokens = [...this.tokens];
+        updatedTokens[tokenIndex] = updatedToken;
+        this.tokens = updatedTokens;
+        
+        this.server.emit('moveToken', {
+          tokenId: updatedToken.id,
+          position: updatedToken.position,
+          room: this.world_id
+        });
+      }
     }
-  }
-  
-  // Handle grid cell click - useful for placing tokens
-  handleCellClick(row: number, col: number) {
-    console.log(`Cell clicked: row ${row}, col ${col}`);
-    // You can implement additional functionality here
+    
+    this.draggingToken = null;
   }
 }
