@@ -1,8 +1,10 @@
 .screen {
   width: 100vw;
   height: 100vh;
-  background-color: #c9c9c9;
   position: relative;
+  display: flex;
+  background-color: #1e1e1e;
+  overflow: hidden;
 }
 
 .chat {
@@ -16,7 +18,7 @@
 
 .aside-chat {
   background-color: white;
-  z-index: 10;
+  z-index: 99;
   position: absolute;
   transition-duration: 200ms;
   border-top-right-radius: 0.5rem;
@@ -52,4 +54,72 @@
     display: flex;
     flex-wrap: wrap;
     flex-direction: row;
+}
+
+
+.board-container {
+  flex-grow: 1;
+  padding: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: auto;
+}
+
+.grid-board {
+  position: relative;
+  background-color: #2c2c2c;
+  width: min-content;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.grid-row {
+  display: flex;
+}
+
+.grid-cell {
+  width: 50px;
+  height: 50px;
+  border: 1px solid #444;
+  box-sizing: border-box;
+  transition: background-color 0.2s;
+}
+
+.grid-cell:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  cursor: pointer;
+}
+
+/* Token styles */
+.token {
+  position: absolute;
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: bold;
+  color: white;
+  cursor: pointer;
+  user-select: none;
+  transition: transform 0.1s;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  z-index: 10;
+}
+
+.token:hover {
+  transform: scale(1.05);
+}
+
+.token.character {
+  background-color: #2563eb;
+}
+
+.token.monster {
+  background-color: #b91c1c;
+}
+
+.token.item {
+  background-color: #a16207;
 }
