@@ -1,7 +1,7 @@
 import { AuthService } from '@/app/shared/modules/auth/auth.service';
 import { SharedModule } from '@/app/shared/modules/shared.module';
 import { API_URL } from '@/environments/environment';
-import { Component, inject, Input, OnInit, ViewChild, ElementRef, OnDestroy, AfterViewInit, HostListener } from '@angular/core';
+import { Component, inject, OnInit, ViewChild, ElementRef, OnDestroy, AfterViewInit, HostListener } from '@angular/core';
 import { io, Socket } from 'socket.io-client';
 import { ActivatedRoute, Router } from '@angular/router';
 
@@ -36,32 +36,26 @@ interface TokenMoveEvent {
 })
 export class TabletopComponent implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild('gridBoard') gridBoardRef!: ElementRef;
+  @ViewChild('chatElement') chatElement: ElementRef<HTMLDivElement>;
 
   router = inject(Router);
   activatedRoute: ActivatedRoute = inject(ActivatedRoute);
   authService: AuthService = inject(AuthService);
-  
   world_id: string = '';
   menu: boolean = false;
   server: Socket;
   user: any;
   msg: string = '';
-  messages: any[] = [];
+  chat: any[] = [];
   
-  // Grid
   gridRows: number[] = Array.from({ length: 15 }, (_, i) => i);
   gridCols: number[] = Array.from({ length: 20 }, (_, i) => i);
   cellSize: number = 50;
   
-  // Tokens
   tokens: Token[] = [];
   draggingToken: Token | null = null;
   dragOffset = { x: 0, y: 0 };
   boardInitialized: boolean = false;
-  
-  constructor() {
-    this.server = io(''); // Placeholder initialization to be replaced in ngOnInit
-  }
 
   ngOnInit(): void {
     this.world_id = this.activatedRoute.snapshot.params["id"];
@@ -89,8 +83,6 @@ export class TabletopComponent implements OnInit, OnDestroy, AfterViewInit {
 
   startEventListeners() {
     this.server.on('user_connected', (res) => {
-      console.log('User connected:', res);
-      // enviar estado do board para novos usuarios
       if (this.tokens.length > 0) {
         this.server.emit('updateBoardState', {
           room: this.world_id,
@@ -102,8 +94,9 @@ export class TabletopComponent implements OnInit, OnDestroy, AfterViewInit {
     this.server.on('newMessage', (res) => this.handleNewMessage(res));
     
     this.server.on('disconnect', () => this.exitWorld());
-    
-    // eventos board
+
+    this.server.on('loadingChat', (res)=>this.loadingChat(res))
+
     this.server.on('boardState', (state) => this.handleBoardState(state));
     
     this.server.on('tokenAdded', (token) => this.handleTokenAdded(token));
@@ -127,14 +120,14 @@ export class TabletopComponent implements OnInit, OnDestroy, AfterViewInit {
     return false;
   }
 
-  handleNewMessage(message: any) {
-    this.messages.push(message);
+  handleNewMessage(message: any){
+    this.chat.push(message)
   }
 
-  sendNewMessage() {
-    if (!this.msg) return;
-    this.server.emit("message", {content: this.msg});
-    this.msg = '';
+  sendNewMessage(){
+    if(!this.msg) return
+    this.server.emit("message", {content: this.msg})
+    this.msg = ''
   }
 
   toggleMenu() {
@@ -147,14 +140,12 @@ export class TabletopComponent implements OnInit, OnDestroy, AfterViewInit {
   
   // metodos board
   handleBoardState(state: any) {
-    console.log('Received board state:', state);
     if (state && state.tokens && Array.isArray(state.tokens)) {
       this.tokens = state.tokens;
     }
   }
   
   handleTokenAdded(token: Token) {
-    console.log('Token added:', token);
     // ver se ja existe tokens
     const existingIndex = this.tokens.findIndex(t => t.id === token.id);
     if (existingIndex === -1) {
@@ -163,7 +154,6 @@ export class TabletopComponent implements OnInit, OnDestroy, AfterViewInit {
   }
   
   handleTokenMoved(event: TokenMoveEvent) {
-    console.log('Token moved:', event);
     const tokenIndex = this.tokens.findIndex(t => t.id === event.tokenId);
     if (tokenIndex >= 0) {
       // criar array para confirmar mudanca
@@ -177,7 +167,6 @@ export class TabletopComponent implements OnInit, OnDestroy, AfterViewInit {
   }
   
   handleTokenRemoved(tokenId: string) {
-    console.log('Token removed:', tokenId);
     this.tokens = this.tokens.filter(t => t.id !== tokenId);
   }
   
@@ -322,5 +311,16 @@ export class TabletopComponent implements OnInit, OnDestroy, AfterViewInit {
     }
     
     this.draggingToken = null;
+  }
+
+  loadingChat(data: any){
+    this.chat = [...data.chat]
+  }
+
+  systemMessageType(type: string){
+    if(type == 'warn') return 'warning-message'
+    else if(type == 'danger') return 'danger-message'
+    else if(type == 'info') return 'info-message'
+    else return '' 
   }
 }

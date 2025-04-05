@@ -25,19 +25,21 @@
   border-bottom-right-radius: 0.5rem;
 }
 
-.message {
+.message, .my-message {
+  width: 65%;
   margin: 16px 0;
   padding: 8px 16px;
-  background-color: rgb(27, 78, 136);
   border-radius: 12px;
-  border-top-left-radius: 0;
-  width: 65%;
+}
+
+.message {
+  background-color: rgb(27, 78, 136) ;
+  border-top-left-radius: 0 ;
 }
 
 .my-message {
   margin-left: auto;
   background-color: rgb(58, 126, 203);
-  border-radius: 12px !important;
   border-top-right-radius: 0 !important;
 }
 
@@ -122,4 +124,23 @@
 
 .token.item {
   background-color: #a16207;
+}
+
+.warning-message,
+.danger-message,
+.info-message {
+  margin: 16px auto;
+  width: 85%;
+  padding: 8px 16px;
+  border-radius: 8px;
+}
+
+.warning-message {
+  background-color: #e9961b;
+}
+.danger-message {
+  background-color: #c92d2d;
+}
+.info-message {
+  background-color: #0055ff;
 }

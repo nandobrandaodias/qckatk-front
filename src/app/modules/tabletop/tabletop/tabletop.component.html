@@ -1,6 +1,8 @@
 <div class="screen">
-  <!-- Left chat sidebar -->
-  <aside class="aside-chat" [ngClass]="menu ? ' w-3/12 min-w-64 h-screen ' : ' w-16 h-auto'">
+  <aside
+    class="aside-chat"
+    [ngClass]="menu ? ' w-3/12 min-w-64 h-screen ' : ' w-16 h-auto'"
+  >
     <section
       class="w-full bg-white rounded-r-md flex flex-col h-full p-2"
       [ngClass]="!menu ? ' items-start ' : ''"
@@ -11,22 +13,32 @@
         </button>
       </div>
       @if(menu){
-      <div class="chat">
-        @for (msg of messages; track $index) {
-        <div
-          class="message"
-          [ngClass]="{ ' my-message ': checkMessageUser(msg) }"
-        >
+      <hr />
+      <div class="chat" #chatElement>
+        @for (msg of chat; track $index) { 
+          @if(!msg.system){
+        <div [class]="!checkMessageUser(msg) ? 'message' : 'my-message'">
           <p class="m-0 text-white">
             @if(!checkMessageUser(msg)){
-            <span class="font-bold text-white mr-1"
+            <span class="font-boldmr-1"
               >{{ msg.user.username }}:</span
             >
             }
-            {{ msg.content }}
+            {{ msg.content.message }}
           </p>
         </div>
         }
+        @else {
+          <div [ngClass]="systemMessageType(msg.type)">
+            <p class="m-0 text-white text-center">
+              <span class="font-bold mr-1 block w-100"
+                >Sistema
+              </span>
+              {{ msg.content.message }}
+            </p>
+          </div>
+        } 
+      }
       </div>
       <div class="w-full">
         <input
