@@ -225,33 +225,6 @@ export class TabletopComponent implements OnInit, OnDestroy, AfterViewInit {
     this.server.emit('initializeBoard', { room: this.world_id });
   }
   
-  addToken(type: 'character' | 'monster' | 'item') {
-    const centerRow = Math.floor(this.gridRows.length / 2);
-    const centerCol = Math.floor(this.gridCols.length / 2);
-
-    const newToken: Token = {
-      id: `${type}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
-      type: type,
-      label: type === 'character' ? 'C' : type === 'monster' ? 'M' : 'I',
-      position: {
-        row: centerRow,
-        col: centerCol,
-        x: centerCol * this.cellSize + (this.cellSize - 45) / 2,
-        y: centerRow * this.cellSize + (this.cellSize - 45) / 2
-      },
-      ownerId: this.user.id
-    };
-    
-    this.tokens = [...this.tokens, newToken];
-    
-    this.server.emit('addToken', { token: newToken, room: this.world_id });
-    // update do board state apos adicionar token
-    this.server.emit('updateBoardState', {
-      room: this.world_id,
-      tokens: this.tokens
-    });
-  }
-  
   // movimentacao token
   cursorPosition = { x: 0, y: 0 };
   
