@@ -17,7 +17,6 @@ import { MessageService } from 'primeng/api';
     FormsModule,
     ReactiveFormsModule,
     ToastModule
-
   ],
   exports: [
     CommonModule,

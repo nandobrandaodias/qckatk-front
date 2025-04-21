@@ -15,30 +15,23 @@
       @if(menu){
       <hr />
       <div class="chat" #chatElement>
-        @for (msg of chat; track $index) { 
-          @if(!msg.system){
+        @for (msg of chat; track $index) { @if(!msg.system){
         <div [class]="!checkMessageUser(msg) ? 'message' : 'my-message'">
           <p class="m-0 text-white">
             @if(!checkMessageUser(msg)){
-            <span class="font-boldmr-1"
-              >{{ msg.user.username }}:</span
-            >
+            <span class="font-boldmr-1">{{ msg.user.username }}:</span>
             }
             {{ msg.content.message }}
           </p>
         </div>
-        }
-        @else {
-          <div [ngClass]="systemMessageType(msg.type)">
-            <p class="m-0 text-white text-center">
-              <span class="font-bold mr-1 block w-100"
-                >Sistema
-              </span>
-              {{ msg.content.message }}
-            </p>
-          </div>
-        } 
-      }
+        } @else {
+        <div [ngClass]="systemMessageType(msg.type)">
+          <p class="m-0 text-white text-center">
+            <span class="font-bold mr-1 block w-100">Sistema </span>
+            {{ msg.content.message }}
+          </p>
+        </div>
+        } }
       </div>
       <div class="w-full">
         <input
@@ -56,38 +49,32 @@
     </section>
   </aside>
 
-  <!-- board  -->
   <div class="board-container">
     <div class="grid-board" #gridBoard>
-      <!-- Grid dinamico -->
       @for (row of gridRows; track $index) {
-        <div class="grid-row">
-          @for (col of gridCols; track $index) {
-            <div 
-              class="grid-cell" 
-              [attr.data-row]="row" 
-              [attr.data-col]="col"
-            ></div>
-          }
-        </div>
-      }
-      
-      <!-- tokens -->
-      @for (token of tokens; track token.id) {
-        <div 
-          class="token" 
-          [ngClass]="token.type" 
-          [style.top.px]="token.position.y" 
-          [style.left.px]="token.position.x"
-          (mousedown)="startDragging($event, token)"
-        >
-          {{ token.label }}
-        </div>
+      <div class="grid-row">
+        @for (col of gridCols; track $index) {
+        <div
+          class="grid-cell"
+          [attr.data-row]="row"
+          [attr.data-col]="col"
+        ></div>
+        }
+      </div>
+      } @for (token of tokens; track token.id) {
+      <div
+        class="token"
+        [ngClass]="token.type"
+        [style.top.px]="token.position.y"
+        [style.left.px]="token.position.x"
+        (mousedown)="startDragging($event, token)"
+      >
+        <img [src]="token.label || ''" [alt]="token.name" class="w-full h-full">
+      </div>
       }
     </div>
   </div>
 
-  <!-- Right tools sidebar -->
   <aside class="aside-tools">
     <div class="tools">
       <button class="h-12 w-full">
@@ -99,9 +86,154 @@
       <button class="h-12 w-full">
         <i class="pi pi-sliders-v"></i>
       </button>
+      <button class="h-12 w-full" (click)="openTokenModal()">
+        <i class="pi pi-book"></i>
+      </button>
       <button (click)="exitWorld()" class="h-12 w-full">
         <i class="pi pi-sign-out"></i>
       </button>
     </div>
   </aside>
 </div>
+
+<p-dialog
+  [(visible)]="showTokenModal"
+  [style]="{ width: '50vw' }"
+  [modal]="true"
+  header="Tabuleiro"
+>
+  <p-tabView>
+    <p-tabPanel header="Tokens">
+      <div class="flex justify-end mb-4">
+        <p-button
+          label="Novo Token"
+          icon="pi pi-plus"
+          (click)="openNewTokenModal()"
+        ></p-button>
+      </div>
+
+      <table class="w-full">
+        <thead>
+          <tr>
+            <th>Imagem</th>
+            <th>Nome</th>
+            <th>Players</th>
+            <th>Ações</th>
+          </tr>
+        </thead>
+        <tbody>
+          @if(tokenList.length){
+          @for (token of tokenList; track $index) {
+          <tr>
+            <td class="text-center">
+              <img
+                [src]="token.image"
+                class="w-12 h-12"
+                alt="token image"
+              />
+            </td>
+            <td>{{ token.name }}</td>
+            <td>{{ token.players ? token.players.join(", ") : '-'}}</td>
+            <td class="text-center">
+              <button
+                pButton
+                icon="pi pi-plus"
+                class="p-button-text"
+                (click)="addToken(token)"
+                pTooltip="Inserir no Tabuleiro"
+                tooltipPosition="top"
+              ></button>
+              <button
+                pButton
+                icon="pi pi-pencil"
+                class="p-button-text"
+                (click)="editToken(token)"
+                pTooltip="Editar Token"
+                tooltipPosition="top"
+              ></button>
+              <button
+                pButton
+                icon="pi pi-trash"
+                class="p-button-text p-button-danger"
+                (click)="deleteToken(token.id)"
+                pTooltip="Deletar Token"
+                tooltipPosition="top"
+              ></button>
+            </td>
+          </tr>
+          }
+        }
+        </tbody>
+      </table>
+    </p-tabPanel>
+    <p-tabPanel header="Backgrounds">
+      <div class="flex justify-end mb-4">
+        <p-button label="Novo Background" icon="pi pi-plus"></p-button>
+      </div>
+    </p-tabPanel>
+  </p-tabView>
+</p-dialog>
+
+<p-dialog
+  [(visible)]="showNewTokenModal"
+  [style]="{ width: '50vw' }"
+  [modal]="true"
+  header="Novo Token"
+>
+  <form [formGroup]="tokenForm" (ngSubmit)="saveToken()">
+    <div class="mb-2">
+      <div class="flex flex-col gap-2">
+        <app-label name="name" description="Nome" [required]="true" />
+        <input 
+          pInputText 
+          id="name" 
+          formControlName="name"
+          [ngClass]="tokenForm.controls['name'].valid ? '' : 'ng-invalid ng-dirty'"
+        />
+        @if(!tokenForm.controls['name'].valid && tokenForm.controls['name'].dirty){
+          <p class="text-red-500">Campo Obrigatório</p>
+        }
+      </div>
+    </div>
+
+
+    <div class="my-4">
+      <div class="flex flex-col gap-2">
+        <app-label name="type" description="Tipo" [required]="true" />
+        <p-dropdown
+          [options]="tokenTypes"
+          formControlName="type"
+          optionLabel="label"
+          optionValue="value"
+          placeholder="Selecione o tipo"
+          [style]="{'width': '100%'}"
+        ></p-dropdown>
+      </div>
+    </div>
+
+    <div class="my-4">
+      <div class="flex flex-col gap-2 mb-3">
+        <app-label name="image" description="Imagem" [required]="true" />
+          <div class="flex justify-evenly items-center">
+            <img [src]="selectedImage || ''" class="w-24 h-24 rounded-full object-cover" />
+            <p-fileUpload
+            mode="basic"
+            chooseLabel="Escolher Imagem"
+            [auto]="true"
+            accept="image/*"
+            (onSelect)="onImageSelect($event)"
+            [maxFileSize]="1000000"
+          ></p-fileUpload>  
+          </div>  
+      </div>
+    </div>
+
+    <div class="flex justify-end gap-2">
+      <p-button label="Cancelar" severity="secondary" (click)="closeNewTokenModal()" />
+      <p-button *ngIf="!editingToken" label="Criar" (click)="saveToken()" [disabled]="!this.tokenForm.valid"/>
+      <p-button *ngIf="editingToken" label="Atualizar" (click)="updateToken()" [disabled]="!this.tokenForm.valid"/>
+    </div>
+  </form>
+</p-dialog>
+
+<p-toast />

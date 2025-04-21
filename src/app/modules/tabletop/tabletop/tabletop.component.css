@@ -93,7 +93,6 @@
   cursor: pointer;
 }
 
-/* Token styles */
 .token {
   position: absolute;
   width: 45px;
@@ -144,4 +143,8 @@
 }
 .info-message {
   background-color: #0055ff;
+}
+
+tr td, tr th{
+  text-align: left;
 }
