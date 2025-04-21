@@ -67,8 +67,9 @@ export class TabletopComponent implements OnInit, OnDestroy, AfterViewInit {
       withCredentials: true
     });
     this.startEventListeners();
+    window.addEventListener('beforeunload', this.handleBeforeUnload.bind(this));
   }
-  
+
   ngAfterViewInit(): void {
     // pegar estado do board
     this.server.emit('getBoardState', this.world_id);
@@ -77,7 +78,23 @@ export class TabletopComponent implements OnInit, OnDestroy, AfterViewInit {
   ngOnDestroy(): void {
     // limpar conexao websocket
     if (this.server) {
+      // salvar o board quando sair (talvez n esteja funcionando)
+      this.server.emit('updateBoardState', {
+        room: this.world_id,
+        tokens: this.tokens
+      });
       this.server.disconnect();
+    }
+    window.removeEventListener('beforeunload', this.handleBeforeUnload.bind(this));
+  }
+
+  private handleBeforeUnload(event: BeforeUnloadEvent) {
+    // salvar o board quando sair (talvez n esteja funcionando)*2
+    if (this.server && this.tokens.length > 0) {
+      this.server.emit('updateBoardState', {
+        room: this.world_id,
+        tokens: this.tokens
+      });
     }
   }
 
@@ -208,25 +225,6 @@ export class TabletopComponent implements OnInit, OnDestroy, AfterViewInit {
     this.server.emit('initializeBoard', { room: this.world_id });
   }
   
-  addToken(type: 'character' | 'monster' | 'item') {
-    const newToken: Token = {
-      id: `${type}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
-      type: type,
-      label: type === 'character' ? 'C' : type === 'monster' ? 'M' : 'I',
-      position: {
-        row: 0,
-        col: 0,
-        x: (this.cellSize - 45) / 2,
-        y: (this.cellSize - 45) / 2
-      },
-      ownerId: this.user.id
-    };
-    
-    this.tokens = [...this.tokens, newToken];
-    
-    this.server.emit('addToken', { token: newToken, room: this.world_id });
-  }
-  
   // movimentacao token
   cursorPosition = { x: 0, y: 0 };
   
@@ -302,10 +300,17 @@ export class TabletopComponent implements OnInit, OnDestroy, AfterViewInit {
         updatedTokens[tokenIndex] = updatedToken;
         this.tokens = updatedTokens;
         
+        // emitir movimento do token
         this.server.emit('moveToken', {
           tokenId: updatedToken.id,
           position: updatedToken.position,
           room: this.world_id
+        });
+
+        // dar update do board state apos mover token
+        this.server.emit('updateBoardState', {
+          room: this.world_id,
+          tokens: this.tokens
         });
       }
     }
@@ -313,6 +318,7 @@ export class TabletopComponent implements OnInit, OnDestroy, AfterViewInit {
     this.draggingToken = null;
   }
 
+  
   loadingChat(data: any){
     this.chat = [...data.chat]
   }
