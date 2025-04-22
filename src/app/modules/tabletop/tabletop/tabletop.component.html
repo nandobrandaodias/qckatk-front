@@ -112,18 +112,16 @@
         ></p-button>
       </div>
 
-      <table class="w-full">
-        <thead>
+      <p-table class="w-full" [value]="tokenList">
+        <ng-template pTemplate="header">
           <tr>
             <th>Imagem</th>
             <th>Nome</th>
             <th>Players</th>
             <th>Ações</th>
           </tr>
-        </thead>
-        <tbody>
-          @if(tokenList.length){
-          @for (token of tokenList; track $index) {
+        </ng-template>
+        <ng-template pTemplate="body" let-token>
           <tr>
             <td class="text-center">
               <img
@@ -161,10 +159,8 @@
               ></button>
             </td>
           </tr>
-          }
-        }
-        </tbody>
-      </table>
+        </ng-template>
+      </p-table>
     </p-tabPanel>
     <p-tabPanel header="Backgrounds">
       <div class="flex justify-end mb-4">
@@ -172,6 +168,7 @@
       </div>
     </p-tabPanel>
   </p-tabView>
+  
 </p-dialog>
 
 <p-dialog
@@ -215,7 +212,7 @@
       <div class="flex flex-col gap-2 mb-3">
         <app-label name="image" description="Imagem" [required]="true" />
           <div class="flex justify-evenly items-center">
-            <img [src]="selectedImage || ''" class="w-24 h-24 rounded-full object-cover" />
+            <img [src]="selectedImage || ''" class="bg-zinc-300 w-24 h-24 rounded-full object-cover" />
             <p-fileUpload
             mode="basic"
             chooseLabel="Escolher Imagem"

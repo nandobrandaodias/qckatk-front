@@ -24,7 +24,7 @@ import { MessageService } from 'primeng/api';
 
 interface Token {
   id: string;
-  type: 'character' | 'monster' | 'item';
+  type: 'character' | 'npc' | 'others';
   label: string;
   position: {
     x: number;
@@ -103,10 +103,8 @@ export class TabletopComponent implements OnInit, OnDestroy, AfterViewInit {
     this.server.emit('getBoardState', this.world_id);
   }
 
-  ngOnDestroy(): void {
-    // limpar conexao websocket
+ngOnDestroy(): void {
     if (this.server) {
-      // salvar o board quando sair (talvez n esteja funcionando)
       this.server.emit('updateBoardState', {
         room: this.world_id,
         tokens: this.tokens
@@ -128,12 +126,6 @@ export class TabletopComponent implements OnInit, OnDestroy, AfterViewInit {
 
   startEventListeners() {
     this.server.on('user_connected', (res) => {
-      if (this.tokens.length > 0) {
-        this.server.emit('updateBoardState', {
-          room: this.world_id,
-          tokens: this.tokens,
-        });
-      }
     });
 
     this.server.on('newMessage', (res) => this.handleNewMessage(res));
@@ -189,7 +181,6 @@ export class TabletopComponent implements OnInit, OnDestroy, AfterViewInit {
     this.router.navigate(['/']);
   }
 
-  // metodos board
   handleBoardState(state: any) {
     if (state && state.tokens && Array.isArray(state.tokens)) {
       this.tokens = state.tokens;
@@ -197,8 +188,7 @@ export class TabletopComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   handleTokenAdded(token: Token) {
-    // ver se ja existe tokens
-    const existingIndex = this.tokens.findIndex((t) => t.id === token.id);
+    const existingIndex = this.tokens.findIndex((t) => t.id == token.id);
     if (existingIndex === -1) {
       this.tokens = [...this.tokens, token];
     }
@@ -248,13 +238,6 @@ export class TabletopComponent implements OnInit, OnDestroy, AfterViewInit {
     };
 
     this.tokens = [characterToken, monsterToken];
-
-    this.server.emit('addToken', {
-      token: characterToken,
-      room: this.world_id,
-    });
-    this.server.emit('addToken', { token: monsterToken, room: this.world_id });
-
     this.server.emit('initializeBoard', { room: this.world_id });
   }
 
@@ -282,10 +265,9 @@ export class TabletopComponent implements OnInit, OnDestroy, AfterViewInit {
   cursorPosition = { x: 0, y: 0 };
 
   startDragging(event: MouseEvent, token: Token) {
-    if (token.ownerId !== this.user.id) return;
-
     if (this.draggingToken) {
       this.dropToken(event);
+      event.preventDefault();
     } else {
       this.draggingToken = { ...token };
       event.preventDefault();
@@ -367,12 +349,6 @@ export class TabletopComponent implements OnInit, OnDestroy, AfterViewInit {
           tokenId: updatedToken.id,
           position: updatedToken.position,
           room: this.world_id,
-        });
-
-        // dar update do board state apos mover token
-        this.server.emit('updateBoardState', {
-          room: this.world_id,
-          tokens: this.tokens
         });
       }
     }
