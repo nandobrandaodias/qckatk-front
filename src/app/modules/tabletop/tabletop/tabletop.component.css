@@ -25,7 +25,8 @@
   border-bottom-right-radius: 0.5rem;
 }
 
-.message, .my-message {
+.message,
+.my-message {
   width: 65%;
   margin: 16px 0;
   padding: 8px 16px;
@@ -33,8 +34,8 @@
 }
 
 .message {
-  background-color: rgb(27, 78, 136) ;
-  border-top-left-radius: 0 ;
+  background-color: rgb(27, 78, 136);
+  border-top-left-radius: 0;
 }
 
 .my-message {
@@ -44,21 +45,25 @@
 }
 
 .aside-tools {
-    height: 100vh;
-    position: absolute;
-    right: 0;
-    z-index: 99;
+  width: 65px;
+  height: 100vh;
+  position: absolute;
+  right: 0;
+  z-index: 99;
+}
+
+.tools button:hover {
+  border-radius: 6px;
+  background-color: #dedede;
 }
 
 .tools {
-    background-color: white;
-    border-radius: 6px;
-    padding: 4px;
-    display: flex;
-    flex-wrap: wrap;
-    flex-direction: row;
+  background-color: white;
+  border-radius: 6px;
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: row;
 }
-
 
 .board-container {
   flex-grow: 1;
@@ -90,7 +95,6 @@
 
 .grid-cell:hover {
   background-color: rgba(255, 255, 255, 0.1);
-  cursor: pointer;
 }
 
 .token {
@@ -108,10 +112,6 @@
   transition: transform 0.1s;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
   z-index: 5;
-}
-
-.token:hover {
-  transform: scale(1.05);
 }
 
 .token.character {
@@ -145,6 +145,7 @@
   background-color: #0055ff;
 }
 
-tr td, tr th{
+tr td,
+tr th {
   text-align: left;
 }

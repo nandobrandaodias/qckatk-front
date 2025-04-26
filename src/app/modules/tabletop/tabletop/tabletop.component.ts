@@ -14,7 +14,6 @@ import {
 import { io, Socket } from 'socket.io-client';
 import { ActivatedRoute, Router } from '@angular/router';
 import {
-  FormBuilder,
   FormControl,
   FormGroup,
   Validators,
@@ -85,6 +84,7 @@ export class TabletopComponent implements OnInit, OnDestroy, AfterViewInit {
   cellSize: number = 50;
 
   tokens: any[] = [];
+  selected_token: any = '';
   draggingToken: Token | null = null;
   dragOffset = { x: 0, y: 0 };
   boardInitialized: boolean = false;
@@ -117,15 +117,18 @@ export class TabletopComponent implements OnInit, OnDestroy, AfterViewInit {
     this.server.emit('getBoardState', this.world_id);
   }
 
-ngOnDestroy(): void {
+  ngOnDestroy(): void {
     if (this.server) {
       this.server.emit('updateBoardState', {
         room: this.world_id,
-        tokens: this.tokens
+        tokens: this.tokens,
       });
       this.server.disconnect();
     }
-    window.removeEventListener('beforeunload', this.handleBeforeUnload.bind(this));
+    window.removeEventListener(
+      'beforeunload',
+      this.handleBeforeUnload.bind(this)
+    );
   }
 
   private handleBeforeUnload(event: BeforeUnloadEvent) {
@@ -133,15 +136,16 @@ ngOnDestroy(): void {
     if (this.server && this.tokens.length > 0) {
       this.server.emit('updateBoardState', {
         room: this.world_id,
-        tokens: this.tokens
+        tokens: this.tokens,
       });
     }
   }
 
   
   startEventListeners() {
-    this.server.on('user_connected', (res) => {
-    });
+    this.server.on('user_connected', (res) => {});
+
+    this.server.on('owner_connected', (res) => {this.user.owner = res; console.log(res)});
 
     this.server.on('newMessage', (res) => this.handleNewMessage(res));
 
@@ -169,13 +173,16 @@ ngOnDestroy(): void {
       this.handleTokenMoved(event)
     );
 
+    this.server.on('tokenRemove', (event: TokenMoveEvent) =>
+      this.handleTokenMoved(event)
+    );
+
     this.server.on('tokenRemoved', (tokenId: string) =>
       this.handleTokenRemoved(tokenId)
     );
 
     this.server.on('getAllTokens', (tokens) => (this.tokenList = tokens));
 
-    // ver criacao do board
     this.server.on('boardInitialized', (isInitialized: boolean) => {
       this.boardInitialized = isInitialized;
       if (!isInitialized) {
@@ -184,7 +191,6 @@ ngOnDestroy(): void {
     });
   }
 
-  // metodos chat
   checkMessageUser(msg: any) {
     if (msg.user.username == this.user.username) return true;
     return false;
@@ -273,7 +279,10 @@ ngOnDestroy(): void {
 
   addToken(token: any) {
     const newToken = {
-      id: `${token.type}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+      id: `${token.type}-${Date.now()}-${Math.random()
+        .toString(36)
+        .substr(2, 9)}`,
+      name: token.name,
       tokenId: token.id,
       type: token.type,
       label: token.image || '',
@@ -283,74 +292,37 @@ ngOnDestroy(): void {
         x: (this.cellSize - 45) / 2,
         y: (this.cellSize - 45) / 2,
       },
-      ownerId: this.user.id,
+      stats: {
+        maxhp: token.maxhp ?? 1,
+        hp: token.hp ?? 1,
+      }
     };
-
-    this.tokens = [...this.tokens, newToken];
 
     this.server.emit('addToken', { token: newToken, room: this.world_id });
   }
 
-  // movimentacao token
   cursorPosition = { x: 0, y: 0 };
 
-  startDragging(event: MouseEvent, token: Token) {
-    if (this.draggingToken) {
-      this.dropToken(event);
-      event.preventDefault();
-    } else {
+  onDragOver(event: DragEvent) {
+    event.preventDefault();
+  }
+
+  startDragging(event: DragEvent, token: Token) {
+    this.draggingToken = token;
+    if (!this.draggingToken) {
       this.draggingToken = { ...token };
+      event.dataTransfer?.setData('text/plain', token.id);
       event.preventDefault();
     }
   }
 
-  @HostListener('document:mousemove', ['$event'])
-  onMouseMove(event: MouseEvent) {
-    if (!this.draggingToken || !this.gridBoardRef) return;
-
-    const boardRect = this.gridBoardRef.nativeElement.getBoundingClientRect();
-
-    const x = event.clientX - boardRect.left;
-    const y = event.clientY - boardRect.top;
-
-    this.cursorPosition = { x, y };
-
-    const col = Math.floor(x / this.cellSize);
-    const row = Math.floor(y / this.cellSize);
-
-    // manter dentro do grid
-    if (
-      col >= 0 &&
-      col < this.gridCols.length &&
-      row >= 0 &&
-      row < this.gridRows.length
-    ) {
-      const updatedToken = { ...this.draggingToken };
-      updatedToken.position = {
-        x: x - this.cellSize / 2,
-        y: y - this.cellSize / 2,
-        row: row,
-        col: col,
-      };
-
-      // Update do token no tokens array
-      const tokenIndex = this.tokens.findIndex((t) => t.id === updatedToken.id);
-      if (tokenIndex >= 0) {
-        const updatedTokens = [...this.tokens];
-        updatedTokens[tokenIndex] = updatedToken;
-        this.tokens = updatedTokens;
-        this.draggingToken = updatedToken;
-      }
-    }
-  }
-
-  dropToken(event: MouseEvent) {
+  dropToken(event: DragEvent) {
+    event.preventDefault();
     if (!this.draggingToken || !this.gridBoardRef) return;
 
     const boardRect = this.gridBoardRef.nativeElement.getBoundingClientRect();
     const x = event.clientX - boardRect.left;
     const y = event.clientY - boardRect.top;
-
     const col = Math.floor(x / this.cellSize);
     const row = Math.floor(y / this.cellSize);
 
@@ -360,7 +332,6 @@ ngOnDestroy(): void {
       row >= 0 &&
       row < this.gridRows.length
     ) {
-      
       const updatedToken = { ...this.draggingToken };
       updatedToken.position = {
         x: col * this.cellSize + (this.cellSize - 45) / 2,
@@ -371,9 +342,7 @@ ngOnDestroy(): void {
 
       const tokenIndex = this.tokens.findIndex((t) => t.id === updatedToken.id);
       if (tokenIndex >= 0) {
-        const updatedTokens = [...this.tokens];
-        updatedTokens[tokenIndex] = updatedToken;
-        this.tokens = updatedTokens;
+        this.tokens[tokenIndex] = updatedToken;
 
         this.server.emit('moveToken', {
           tokenId: updatedToken.id,
@@ -384,6 +353,11 @@ ngOnDestroy(): void {
     }
 
     this.draggingToken = null;
+  }
+
+  selectToken(token?: Token) {
+    if (!token) this.selected_token = null;
+    else this.selected_token = token;
   }
 
   loadingChat(data: any) {
@@ -448,7 +422,7 @@ ngOnDestroy(): void {
         ...this.tokenForm.value,
         image: this.selectedImage,
       };
-      
+
       try {
         const response = await this.server
           .timeout(500)
@@ -495,26 +469,25 @@ openTokenModal() {
         const response = await this.server
           .timeout(500)
           .emitWithAck('updateToken', {
-            token: tokenData
-          })
+            token: tokenData,
+          });
 
-          if (response) {
-            this.closeNewTokenModal();
-            this.messageService.add({
-              severity: 'success',
-              summary: 'Sucesso',
-              detail: 'Token atualizado com sucesso',
-            });
-            this.loadTokens();
-          } else {
-            this.messageService.add({
-              severity: 'error',
-              summary: 'Erro',
-              detail: 'Erro ao atualziar o token',
-            });
-          }
-      }
-      catch (error) {
+        if (response) {
+          this.closeNewTokenModal();
+          this.messageService.add({
+            severity: 'success',
+            summary: 'Sucesso',
+            detail: 'Token atualizado com sucesso',
+          });
+          this.loadTokens();
+        } else {
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Erro',
+            detail: 'Erro ao atualziar o token',
+          });
+        }
+      } catch (error) {
         this.messageService.add({
           severity: 'error',
           summary: 'Erro',
@@ -536,20 +509,82 @@ openTokenModal() {
   }
 
   async deleteToken(token: string) {
-    const res = await this.server.timeout(500).emitWithAck('deleteToken', token);
-    if(res){
+    const res = await this.server
+      .timeout(500)
+      .emitWithAck('deleteToken', token);
+    if (res) {
       this.loadTokens();
       this.messageService.add({
         severity: 'success',
         summary: 'Sucesso',
         detail: 'Token deletado com sucesso',
       });
+    } else
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Erro',
+        detail: 'Erro ao deletar o token',
+      });
+  }
+  deleteTokenFromBoard(token: string) {
+    this.server.emit('removeToken', token);
+  }
+
+  @HostListener('document:keydown', ['$event'])
+  keyDownToken(event: KeyboardEvent) {
+    const key = event.key;
+
+    if(key === 'Backspace' && this.selected_token && this.user.owner) {
+      this.deleteTokenFromBoard(this.selected_token.id);
+      this.selected_token = null;  
     }
-    else this.messageService.add({
-      severity:'error',
-      summary: 'Erro',
-      detail: 'Erro ao deletar o token',
-    });
+
+    if (
+      (key === 'ArrowUp' ||
+      key === 'ArrowDown' ||
+      key === 'ArrowLeft' ||
+      key === 'ArrowRight') && this.selected_token
+    ) {
+      const { row, col } = this.selected_token.position;
+      let newRow = row;
+      let newCol = col;
+      if (event.key === 'ArrowUp') newRow--;
+      else if (event.key === 'ArrowDown') newRow++;
+      else if (event.key === 'ArrowLeft') newCol--;
+      else if (event.key === 'ArrowRight') newCol++;
+      if (
+        newRow >= 0 &&
+        newRow < this.gridRows.length &&
+        newCol >= 0 &&
+        newCol < this.gridCols.length
+      ) {
+        this.selected_token.position = {
+          row: newRow,
+          col: newCol,
+          x: newCol * this.cellSize + (this.cellSize - 45) / 2,
+          y: newRow * this.cellSize + (this.cellSize - 45) / 2,
+        };
+
+        const tokenIndex = this.tokens.findIndex(
+          (t) => t.id === this.selected_token.id
+        );
+        if (tokenIndex >= 0) {
+          this.tokens[tokenIndex] = this.selected_token;
+
+          this.server.emit('moveToken', {
+            tokenId: this.selected_token.id,
+            position: this.selected_token.position,
+            room: this.world_id,
+          });
+        }
+      }
+    }
+  }
+
+  handleChatKeyDown(event: KeyboardEvent) {
+    if (event.key === 'Enter') {
+      this.sendNewMessage();
+    }
   }
 
   editBackgroundName(background: any) {
@@ -610,13 +645,6 @@ async removeBackground() {
 
     if (response) {
       this.currentBackground = null;
-      
-      // Update board state after removing background
-      this.server.emit('updateBoardState', {
-        room: this.world_id,
-        tokens: this.tokens,
-        background: null
-      });
 
       this.messageService.add({
         severity: 'success',
