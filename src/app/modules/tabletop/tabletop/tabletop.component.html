@@ -50,7 +50,13 @@
   </aside>
 
   <div class="board-container">
-    <div class="grid-board" #gridBoard>
+    <div 
+      class="grid-board" 
+      #gridBoard
+      [style.background-image]="currentBackground ? 'url(' + currentBackground + ')' : 'none'"
+      [style.background-size]="'cover'"
+      [style.background-position]="'center'"
+    >
       @for (row of gridRows; track $index) {
       <div class="grid-row">
         @for (col of gridCols; track $index) {
@@ -102,7 +108,7 @@
   [modal]="true"
   header="Tabuleiro"
 >
-  <p-tabView>
+  <p-tabView (onChange)="onTabChange($event)">
     <p-tabPanel header="Tokens">
       <div class="flex justify-end mb-4">
         <p-button
@@ -163,9 +169,76 @@
       </p-table>
     </p-tabPanel>
     <p-tabPanel header="Backgrounds">
-      <div class="flex justify-end mb-4">
-        <p-button label="Novo Background" icon="pi pi-plus"></p-button>
+      <div class="flex flex-col gap-4">
+      <div class="flex justify-between items-center">
+        <h3>Background Atual</h3>
+        <p-button 
+          icon="pi pi-trash" 
+          severity="danger" 
+          (click)="removeBackground()"
+          [disabled]="!currentBackground"
+        ></p-button>
       </div>
+    
+      <div class="bg-zinc-100 rounded-lg p-4 flex justify-center items-center" style="min-height: 200px;">
+        <img [src]="currentBackground || ''" class="max-h-48 object-contain" />
+        @if(!currentBackground){
+          <p class="text-zinc-400">Nenhum background definido</p>
+        }
+      </div>
+    
+      <div class="flex flex-col gap-2">
+        <p-fileUpload
+          mode="basic"
+          chooseLabel="Escolher Background"
+          [auto]="true"
+          accept="image/*"
+          (onSelect)="onBackgroundSelect($event)"
+          [maxFileSize]="1048576"
+        ></p-fileUpload>
+        <small class="text-zinc-500">*Tamanho máximo: 1MB</small>
+      </div>
+    
+      <div class="mt-4">
+        <h3 class="mb-2">Histórico de Backgrounds</h3>
+        <p-table [value]="backgroundHistory" [scrollable]="true" scrollHeight="200px">
+          <ng-template pTemplate="header">
+            <tr>
+              <th>Preview</th>
+              <th>Nome</th>
+              <th>Data</th>
+              <th>Ações</th>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-bg>
+            <tr>
+              <td style="width: 100px">
+                <img [src]="bg.url" class="w-16 h-16 object-cover rounded" />
+              </td>
+              <td>{{ bg.name }}</td>
+              <td>{{ bg.addedAt | date:'dd/MM/yyyy HH:mm' }}</td>
+              <td>
+                <button
+                  pButton
+                  icon="pi pi-image"
+                  class="p-button-text"
+                  (click)="useBackgroundFromHistory(bg.url)"
+                  pTooltip="Usar como Background"
+                  tooltipPosition="top"
+                ></button>
+              </td>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="emptymessage">
+            <tr>
+              <td colspan="3" class="text-center p-4">
+                Nenhum background no histórico
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </div>
+    </div>
     </p-tabPanel>
   </p-tabView>
   
@@ -219,7 +292,7 @@
             [auto]="true"
             accept="image/*"
             (onSelect)="onImageSelect($event)"
-            [maxFileSize]="1000000"
+            [maxFileSize]="1048576"
           ></p-fileUpload>  
           </div>  
       </div>

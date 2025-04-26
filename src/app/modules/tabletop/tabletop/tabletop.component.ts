@@ -45,6 +45,11 @@ interface TokenMoveEvent {
   };
 }
 
+interface BackgroundHistory {
+  url: string;
+  addedAt: Date;
+}
+
 @Component({
   selector: 'app-tabletop',
   imports: [SharedModule, LabelComponent],
@@ -52,6 +57,8 @@ interface TokenMoveEvent {
   styleUrl: './tabletop.component.css',
 })
 export class TabletopComponent implements OnInit, OnDestroy, AfterViewInit {
+
+  
   @ViewChild('gridBoard') gridBoardRef!: ElementRef;
   @ViewChild('chatElement') chatElement: ElementRef<HTMLDivElement>;
 
@@ -85,6 +92,12 @@ export class TabletopComponent implements OnInit, OnDestroy, AfterViewInit {
   selectedImage: any;
   messageService: MessageService = inject(MessageService);
 
+  currentBackground: string | null = null;
+  backgroundHistory: BackgroundHistory[] = [];
+  showEditBackgroundDialog: boolean = false;
+  editingBackgroundName: string = '';
+  editingBackground: any = null;
+
   ngOnInit(): void {
     this.world_id = this.activatedRoute.snapshot.params['id'];
     this.user = this.authService.userToken();
@@ -96,6 +109,7 @@ export class TabletopComponent implements OnInit, OnDestroy, AfterViewInit {
     });
     this.startEventListeners();
     this.initTokenForm();
+    this.loadBackgroundHistory();
   }
 
   ngAfterViewInit(): void {
@@ -124,6 +138,7 @@ ngOnDestroy(): void {
     }
   }
 
+  
   startEventListeners() {
     this.server.on('user_connected', (res) => {
     });
@@ -135,6 +150,18 @@ ngOnDestroy(): void {
     this.server.on('loadingChat', (res) => this.loadingChat(res));
 
     this.server.on('boardState', (state) => this.handleBoardState(state));
+
+    // Add this new listener
+    this.server.on('backgroundHistoryUpdated', (history: BackgroundHistory[]) => {
+      this.backgroundHistory = history.map(bg => ({
+        ...bg,
+        addedAt: new Date(bg.addedAt)
+      }));
+    });
+
+    this.server.on('backgroundUpdated', (background: string | null) => {
+      this.currentBackground = background;
+    });
 
     this.server.on('tokenAdded', (token) => this.handleTokenAdded(token));
 
@@ -184,6 +211,9 @@ ngOnDestroy(): void {
   handleBoardState(state: any) {
     if (state && state.tokens && Array.isArray(state.tokens)) {
       this.tokens = state.tokens;
+    }
+    if (state && state.background) {
+      this.currentBackground = state.background;
     }
   }
 
@@ -330,7 +360,7 @@ ngOnDestroy(): void {
       row >= 0 &&
       row < this.gridRows.length
     ) {
-      // grudar no grid
+      
       const updatedToken = { ...this.draggingToken };
       updatedToken.position = {
         x: col * this.cellSize + (this.cellSize - 45) / 2,
@@ -367,11 +397,13 @@ ngOnDestroy(): void {
     else return '';
   }
 
-  openTokenModal() {
-    this.showTokenModal = true;
-    this.loadTokens();
+  
+  onTabChange(event: any) {
+    if (event.index === 1) {
+      this.loadBackgroundHistory();
+    }
   }
-
+  
   tokenTypes = [
     { label: 'Jogadores', value: 'character' },
     { label: 'NPCs', value: 'npc' },
@@ -447,6 +479,12 @@ ngOnDestroy(): void {
     }
   }
 
+openTokenModal() {
+  this.showTokenModal = true;
+  this.loadTokens();
+  this.loadBackgroundHistory();
+}
+
   async updateToken() {
     if (this.tokenForm.valid && this.selectedImage) {
       const tokenData = {
@@ -513,4 +551,165 @@ ngOnDestroy(): void {
       detail: 'Erro ao deletar o token',
     });
   }
+
+  editBackgroundName(background: any) {
+    this.editingBackground = background;
+    this.editingBackgroundName = background.name;
+    this.showEditBackgroundDialog = true;
+  }
+  
+  saveBackgroundName() {
+    if (!this.editingBackgroundName.trim() || !this.editingBackground) {
+      return;
+    }
+  
+    const updatedBackground = {
+      ...this.editingBackground,
+      name: this.editingBackgroundName
+    };
+  
+    this.server.emit('updateBackgroundName', {
+      background: updatedBackground,
+      room: this.world_id
+    });
+  
+    this.showEditBackgroundDialog = false;
+    this.editingBackground = null;
+    this.editingBackgroundName = '';
+  }
+
+  async loadBackgroundHistory() {
+    try {
+      const response = await this.server
+        .timeout(500)
+        .emitWithAck('getBackgroundHistory', { room: this.world_id });
+      
+      if (response) {
+        this.backgroundHistory = response.map((bg: any) => ({
+          ...bg,
+          addedAt: new Date(bg.addedAt)
+        }));
+      }
+    } catch (error) {
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Erro',
+        detail: 'Erro ao carregar histórico de backgrounds',
+      });
+    }
+  }
+
+  
+async removeBackground() {
+  try {
+    const response = await this.server
+      .timeout(500)
+      .emitWithAck('removeBackground', {
+        room: this.world_id,
+      });
+
+    if (response) {
+      this.currentBackground = null;
+      
+      // Update board state after removing background
+      this.server.emit('updateBoardState', {
+        room: this.world_id,
+        tokens: this.tokens,
+        background: null
+      });
+
+      this.messageService.add({
+        severity: 'success',
+        summary: 'Sucesso',
+        detail: 'Background removido com sucesso',
+      });
+    } else {
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Erro',
+        detail: 'Erro ao remover o background',
+      });
+    }
+  } catch (error) {
+    this.messageService.add({
+      severity: 'error',
+      summary: 'Erro',
+      detail: 'Erro ao remover o background',
+    });
+  }
 }
+  
+onBackgroundSelect(event: any) {
+  const file = event.files[0];
+  if (file) {
+    // Check file size (1MB limit)
+    if (file.size > 1048576) {
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Erro',
+        detail: 'Arquivo muito grande. Máximo 1MB.',
+      });
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = async (e: any) => {
+      try {
+        this.currentBackground = e.target.result;
+        await this.updateBackground();
+      } catch (error) {
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Erro',
+          detail: 'Erro ao atualizar o background. Tente novamente.',
+        });
+      }
+    };
+    reader.onerror = () => {
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Erro',
+        detail: 'Erro ao ler o arquivo. Tente novamente.',
+      });
+    };
+    reader.readAsDataURL(file);
+  }
+}
+
+async updateBackground() {
+  if (this.currentBackground) {
+    try {
+      const response = await this.server
+        .timeout(2000) // Using the 2 second timeout
+        .emitWithAck('updateBackground', {
+          background: this.currentBackground,
+          room: this.world_id,
+        });
+
+      if (response) {
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Sucesso',
+          detail: 'Background atualizado com sucesso',
+        });
+      } else {
+        throw new Error('Failed to update background');
+      }
+    } catch (error) {
+      this.currentBackground = null; // Reset on error
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Erro',
+        detail: 'Erro ao atualizar o background. Tente novamente.',
+      });
+      }
+    }
+  }
+
+  async useBackgroundFromHistory(backgroundUrl: string) {
+    this.currentBackground = backgroundUrl;
+    await this.updateBackground();
+  }
+ 
+}
+
