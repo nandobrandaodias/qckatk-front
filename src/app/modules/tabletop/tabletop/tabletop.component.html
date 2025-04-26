@@ -40,6 +40,7 @@
           pInputText
           [(ngModel)]="msg"
           [ngModelOptions]="{ standalone: true }"
+          (keydown)="handleChatKeyDown($event)"
           placeholder="Digite sua mensagem..."
           maxlength="255"
         />

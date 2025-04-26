@@ -156,7 +156,6 @@ export class TabletopComponent implements OnInit, OnDestroy, AfterViewInit {
 
     this.server.on('getAllTokens', (tokens) => (this.tokenList = tokens));
 
-    // ver criacao do board
     this.server.on('boardInitialized', (isInitialized: boolean) => {
       this.boardInitialized = isInitialized;
       if (!isInitialized) {
@@ -165,7 +164,6 @@ export class TabletopComponent implements OnInit, OnDestroy, AfterViewInit {
     });
   }
 
-  // metodos chat
   checkMessageUser(msg: any) {
     if (msg.user.username == this.user.username) return true;
     return false;
@@ -542,6 +540,12 @@ export class TabletopComponent implements OnInit, OnDestroy, AfterViewInit {
           });
         }
       }
+    }
+  }
+
+  handleChatKeyDown(event: KeyboardEvent) {
+    if (event.key === 'Enter') {
+      this.sendNewMessage();
     }
   }
 }
