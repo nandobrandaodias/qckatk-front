@@ -56,8 +56,6 @@ interface BackgroundHistory {
   styleUrl: './tabletop.component.css',
 })
 export class TabletopComponent implements OnInit, OnDestroy, AfterViewInit {
-
-  
   @ViewChild('gridBoard') gridBoardRef!: ElementRef;
   @ViewChild('chatElement') chatElement: ElementRef<HTMLDivElement>;
 

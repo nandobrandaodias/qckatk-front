@@ -19,6 +19,10 @@ body {
     font-family: 'Poppins', sans-serif;
 }
 
+.text-primary {
+    color: #EC6613!important;
+}
+
 .bg-primary {
     background-color: #EC6613 !important;
 }
