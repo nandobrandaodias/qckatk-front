@@ -15,20 +15,20 @@
       @if(menu){
       <hr />
       <div class="chat" #chatElement>
-        @for (msg of chat; track $index) { @if(!msg.system){
-        <div [class]="!checkMessageUser(msg) ? 'message' : 'my-message'">
+        @for (message of chat; track $index) { @if(!message.system){
+        <div [class]="!checkMessageUser(message) ? 'message' : 'my-message'">
           <p class="m-0 text-white">
-            @if(!checkMessageUser(msg)){
-            <span class="font-boldmr-1">{{ msg.user.username }}:</span>
+            @if(!checkMessageUser(message)){
+            <span class="font-boldmr-1">{{ message.user.username }}:</span>
             }
-            {{ msg.content.message }}
+            {{ message.content.message }}
           </p>
         </div>
         } @else {
-        <div [ngClass]="systemMessageType(msg.type)">
+        <div [ngClass]="systemMessageType(message.type)">
           <p class="m-0 text-white text-center">
             <span class="font-bold mr-1 block w-100">Sistema </span>
-            {{ msg.content.message }}
+            {{ message.content.message }}
           </p>
         </div>
         } }
@@ -38,7 +38,7 @@
           fluid
           type="text"
           pInputText
-          [(ngModel)]="msg"
+          [(ngModel)]="message"
           [ngModelOptions]="{ standalone: true }"
           (keydown)="handleChatKeyDown($event)"
           placeholder="Digite sua mensagem..."
