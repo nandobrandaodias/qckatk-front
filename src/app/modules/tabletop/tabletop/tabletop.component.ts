@@ -430,7 +430,7 @@ export class TabletopComponent implements OnInit, OnDestroy, AfterViewInit {
         image: this.selectedImage,
       };
 
-      const response = await this.tokensService.saveToken(this.server, this.tokenForm.value);
+      const response = await this.tokensService.saveToken(this.server, tokenData);
       if (response) {
         this.messageService.add({
           severity: 'success',
