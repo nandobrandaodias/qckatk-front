@@ -36,4 +36,10 @@ export class TableConfigService {
           background: background,
         });
   }
+
+  async listPlayers(server: any){
+    return await server
+        .timeout(500)
+        .emitWithAck('listAllPlayers');
+  }
 }
