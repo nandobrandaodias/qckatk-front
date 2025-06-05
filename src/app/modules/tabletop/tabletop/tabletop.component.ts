@@ -20,6 +20,7 @@ import { ChatService } from '@/app/shared/services/chat.service';
 import { TokensService } from '@/app/shared/services/tokens.service';
 import { ToolsService } from '@/app/shared/services/tools.service';
 import { TableConfigService } from '@/app/shared/services/tableConfig.service';
+import { SliderModule } from 'primeng/slider';
 
 interface Token {
   id: string;
@@ -51,7 +52,7 @@ interface BackgroundHistory {
 
 @Component({
   selector: 'app-tabletop',
-  imports: [SharedModule, LabelComponent],
+  imports: [SharedModule, LabelComponent, SliderModule],
   templateUrl: './tabletop.component.html',
   styleUrl: './tabletop.component.css',
 })
@@ -66,6 +67,9 @@ export class TabletopComponent implements OnInit, OnDestroy, AfterViewInit {
   tableConfigService: TableConfigService = inject(TableConfigService);
   tokensService: TokensService = inject(TokensService);
   toolsService: ToolsService = inject(ToolsService);
+
+  showGridConfigModal: boolean = false;
+  gridConfigForm: FormGroup;
 
   world_id: string = '';
   menu: boolean = false;
@@ -316,8 +320,9 @@ export class TabletopComponent implements OnInit, OnDestroy, AfterViewInit {
     const boardRect = this.gridBoardRef.nativeElement.getBoundingClientRect();
     const x = event.clientX - boardRect.left;
     const y = event.clientY - boardRect.top;
-    const col = Math.floor(x / this.cellSize);
-    const row = Math.floor(y / this.cellSize);
+    
+    const col = Math.floor(x / (this.cellSize * this.zoomLevel));
+    const row = Math.floor(y / (this.cellSize * this.zoomLevel));
 
     if (
       col >= 0 &&
@@ -341,6 +346,39 @@ export class TabletopComponent implements OnInit, OnDestroy, AfterViewInit {
     }
 
     this.draggingToken = null;
+  }
+
+
+  //zoom
+  zoomLevel: number = 1;
+  minZoom: number = 0.5;
+  maxZoom: number = 4;
+  zoomStep: number = 0.1;
+  showZoomControls: boolean = false;
+
+  toggleZoomControls() {
+    this.showZoomControls = !this.showZoomControls;
+  }
+
+  @HostListener('wheel', ['$event'])
+  onMouseWheel(event: WheelEvent) {
+    if (event.ctrlKey || event.metaKey) {
+      event.preventDefault();
+      const delta = event.deltaY > 0 ? -this.zoomStep : this.zoomStep;
+      this.setZoom(this.zoomLevel + delta);
+    }
+  }
+
+  setZoom(newZoomLevel: number) {
+    const clampedZoom = Math.max(this.minZoom, Math.min(this.maxZoom, newZoomLevel));
+    
+    if (clampedZoom !== this.zoomLevel) {
+      this.zoomLevel = clampedZoom;
+    }
+  }
+
+  resetZoom() {
+    this.zoomLevel = 1;
   }
 
   selectToken(token?: Token) {

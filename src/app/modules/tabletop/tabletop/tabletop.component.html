@@ -61,6 +61,7 @@
       "
       [style.background-size]="'cover'"
       [style.background-position]="'center'"
+      [style.transform]="'scale(' + zoomLevel + ')'"
     >
       @for (row of gridRows; track $index) {
       <div class="grid-row">
@@ -70,6 +71,8 @@
           (click)="selectToken()"
           [attr.data-row]="row"
           [attr.data-col]="col"
+          [style.width.px]="cellSize"
+          [style.height.px]="cellSize"
           (dragover)="onDragOver($event)"
           (drop)="dropToken($event)"
         ></div>
@@ -120,6 +123,27 @@
       </div>
       }
     </div>
+    
+    <div class="zoom-controls" [class.show]="showZoomControls">
+      <div class="zoom-slider">
+        <button class="zoom-btn" (click)="setZoom(zoomLevel - zoomStep)">
+          <i class="pi pi-minus"></i>
+        </button>
+        <p-slider 
+          [(ngModel)]="zoomLevel" 
+          [min]="minZoom" 
+          [max]="maxZoom" 
+          [step]="zoomStep"
+          [style]="{'width': '100px'}">
+        </p-slider>
+        <button class="zoom-btn" (click)="setZoom(zoomLevel + zoomStep)">
+          <i class="pi pi-plus"></i>
+        </button>
+        <button class="zoom-reset" (click)="resetZoom()" pTooltip="Reset Zoom" tooltipPosition="top">
+          <i class="pi pi-refresh"></i>
+        </button>
+      </div>
+    </div>
   </div>
 
   <aside class="aside-tools">
@@ -132,6 +156,9 @@
       </button>
       <button class="h-12 w-full">
         <i class="pi pi-sliders-v"></i>
+      </button>
+      <button class="h-12 w-full" (click)="toggleZoomControls()" pTooltip="Zoom Controls" tooltipPosition="left">
+        <i class="pi pi-search"></i>
       </button>
       @if(user.owner){
       <button class="h-12 w-full" (click)="openTokenModal()">
