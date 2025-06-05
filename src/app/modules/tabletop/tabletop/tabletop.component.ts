@@ -13,11 +13,7 @@ import {
 } from '@angular/core';
 import { io, Socket } from 'socket.io-client';
 import { ActivatedRoute, Router } from '@angular/router';
-import {
-  FormControl,
-  FormGroup,
-  Validators,
-} from '@angular/forms';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { LabelComponent } from '../../../shared/components/label/label.component';
 import { MessageService } from 'primeng/api';
 import { ChatService } from '@/app/shared/services/chat.service';
@@ -81,27 +77,30 @@ export class TabletopComponent implements OnInit, OnDestroy, AfterViewInit {
   user: any;
   message: string = '';
   chat: any[] = [];
-  
 
   showTokenModal: boolean = false;
   showTokenDialog: boolean = false;
   showNewTokenModal: boolean = false;
+  showPlayersListModal: boolean = false;
 
   tokenList: any[] = [];
   editingToken: string = '';
   availablePlayers: any[] = [];
+  allPlayers: any[] = [];
 
   gridRows: number[] = Array.from({ length: 15 }, (_, i) => i);
   gridCols: number[] = Array.from({ length: 20 }, (_, i) => i);
   cellSize: number = 50;
 
   tokens: any[] = [];
+  tokenPlayers: any[] = [];
   tokenTypes = [
     { label: 'Jogadores', value: 'character' },
     { label: 'NPCs', value: 'npc' },
     { label: 'Outros', value: 'others' },
   ];
   selected_token: any = '';
+  selectedPlayer: any = null;
   draggingToken: Token | null = null;
   dragOffset = { x: 0, y: 0 };
   cursorPosition = { x: 0, y: 0 };
@@ -117,19 +116,20 @@ export class TabletopComponent implements OnInit, OnDestroy, AfterViewInit {
   editingBackground: any = null;
 
   @HostListener('document:keydown', ['$event'])
-  keyDownToken(event: KeyboardEvent) {
+  async keyDownToken(event: KeyboardEvent) {
     const key = event.key;
 
-    if(key === 'Backspace' && this.selected_token && this.user.owner) {
+    if (key === 'Backspace' && this.selected_token && this.user.owner) {
       this.deleteTokenFromBoard(this.selected_token.id);
-      this.selected_token = null;  
+      this.selected_token = null;
     }
 
     if (
       (key === 'ArrowUp' ||
-      key === 'ArrowDown' ||
-      key === 'ArrowLeft' ||
-      key === 'ArrowRight') && this.selected_token
+        key === 'ArrowDown' ||
+        key === 'ArrowLeft' ||
+        key === 'ArrowRight') &&
+      this.selected_token
     ) {
       const { row, col } = this.selected_token.position;
       let newRow = row;
@@ -144,7 +144,8 @@ export class TabletopComponent implements OnInit, OnDestroy, AfterViewInit {
         newCol >= 0 &&
         newCol < this.gridCols.length
       ) {
-        this.selected_token.position = {
+        const updatedToken = { ...this.selected_token };
+        updatedToken.position = {
           row: newRow,
           col: newCol,
           x: newCol * this.cellSize + (this.cellSize - 45) / 2,
@@ -152,21 +153,19 @@ export class TabletopComponent implements OnInit, OnDestroy, AfterViewInit {
         };
 
         const tokenIndex = this.tokens.findIndex(
-          (t) => t.id === this.selected_token.id
+          (t) => t.id === updatedToken.id
         );
-        if (tokenIndex >= 0) {
-          this.tokens[tokenIndex] = this.selected_token;
 
-          this.server.emit('moveToken', {
-            tokenId: this.selected_token.id,
-            position: this.selected_token.position,
-            room: this.world_id,
-          });
+        if (tokenIndex >= 0) {
+          const res = await this.tokensService.moveToken(this.server, updatedToken);
+          if(res){
+            this.tokens[tokenIndex] = updatedToken
+            this.selected_token = updatedToken;
+          }
         }
       }
     }
   }
-
 
   ngOnInit(): void {
     this.world_id = this.activatedRoute.snapshot.params['id'];
@@ -196,9 +195,10 @@ export class TabletopComponent implements OnInit, OnDestroy, AfterViewInit {
     }
   }
 
-  
   startEventListeners() {
-    this.server.on('owner_connected', (res) => {this.user.owner = res;});
+    this.server.on('owner_connected', (res) => {
+      this.user.owner = res;
+    });
 
     this.server.on('newMessage', (res) => this.handleNewMessage(res));
 
@@ -208,12 +208,15 @@ export class TabletopComponent implements OnInit, OnDestroy, AfterViewInit {
 
     this.server.on('boardState', (state) => this.handleBoardState(state));
 
-    this.server.on('backgroundHistoryUpdated', (history: BackgroundHistory[]) => {
-      this.backgroundHistory = history.map(bg => ({
-        ...bg,
-        addedAt: new Date(bg.addedAt)
-      }));
-    });
+    this.server.on(
+      'backgroundHistoryUpdated',
+      (history: BackgroundHistory[]) => {
+        this.backgroundHistory = history.map((bg) => ({
+          ...bg,
+          addedAt: new Date(bg.addedAt),
+        }));
+      }
+    );
 
     this.server.on('backgroundUpdated', (background: string | null) => {
       this.currentBackground = background;
@@ -234,6 +237,10 @@ export class TabletopComponent implements OnInit, OnDestroy, AfterViewInit {
     );
 
     this.server.on('getAllTokens', (tokens) => (this.tokenList = tokens));
+
+    this.server.on('tokenPermissionAdded', ({user, token}) => this.tokenPermissionAdded(user, token));
+
+    this.server.on('tokenPermissionRemoved', ({user, token}) => this.tokenPermissionRemoved(user, token));
 
     this.server.on('boardInitialized', (isInitialized: boolean) => {
       this.boardInitialized = isInitialized;
@@ -261,7 +268,7 @@ export class TabletopComponent implements OnInit, OnDestroy, AfterViewInit {
     }
   }
 
-  initializeBoard(){
+  initializeBoard() {
     this.tableConfigService.initializeBoard(this.world_id, this.server);
   }
 
@@ -290,7 +297,7 @@ export class TabletopComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   addToken(token: any) {
-    this.tokensService.addTokenToTable(this.server, token, this.cellSize)
+    this.tokensService.addTokenToTable(this.server, token, this.cellSize);
   }
 
   onDragOver(event: DragEvent) {
@@ -305,7 +312,8 @@ export class TabletopComponent implements OnInit, OnDestroy, AfterViewInit {
       event.preventDefault();
     }
   }
-  dropToken(event: DragEvent) {
+
+  async dropToken(event: DragEvent) {
     event.preventDefault();
     if (!this.draggingToken || !this.gridBoardRef) return;
 
@@ -332,8 +340,8 @@ export class TabletopComponent implements OnInit, OnDestroy, AfterViewInit {
 
       const tokenIndex = this.tokens.findIndex((t) => t.id === updatedToken.id);
       if (tokenIndex >= 0) {
-        this.tokens[tokenIndex] = updatedToken;
-        this.tokensService.dropTokenOnTable(this.server, updatedToken);
+        const response = await this.tokensService.moveToken(this.server, updatedToken);
+        if(response) this.tokens[tokenIndex] = updatedToken;
       }
     }
 
@@ -382,6 +390,69 @@ export class TabletopComponent implements OnInit, OnDestroy, AfterViewInit {
     this.server.emit('removeToken', token);
   }
 
+  tokenPermissionAdded(user: any, token_id: any) {
+    this.tokens = this.tokens.map((token) => {
+      if (token.tokenId === token_id) {
+        const tokenIdx = this.tokens.findIndex((t) => t.tokenId === token_id);
+        if (tokenIdx >= 0) {
+          let token = this.tokens[tokenIdx];
+          token.players.push({
+            username: user.username,
+            _id: user._id,
+          })
+          this.tokens[tokenIdx] = token
+        }
+      }
+      return token;
+    }
+    );
+  }
+
+  tokenPermissionRemoved(user: any, token_id: any) {
+    this.tokens = this.tokens.map((token) => {
+      if (token.tokenId === token_id) {
+        const tokenIdx = this.tokens.findIndex((t) => t.tokenId === token_id);
+        if (tokenIdx >= 0) {
+          const token = this.tokens[tokenIdx];
+          token.players = token.players.filter((player: any) => player._id !== user._id);
+          this.tokens[tokenIdx] = token;
+        }
+      }
+      return token;
+    });
+  }
+
+  async listTokenPlayers(token: any) {
+    const players = await this.tableConfigService.listPlayers(this.server)
+    this.tokenPlayers = [...token.players];
+    this.editingToken = token.id;
+    this.allPlayers = players.allowed_users;
+    if(!players.allowed_users) this.availablePlayers = [];
+    else {
+      this.availablePlayers = players.allowed_users.filter((player: any)=>this.tokenPlayers.find((tokenPlayer: any) => tokenPlayer._id === player._id) === undefined)
+    }
+
+  }
+
+  async removePlayerFromToken(user: any, token_id: string) {
+    const res = await this.tokensService.removePlayerFromToken(this.server, {user, token: token_id});
+    if(res){
+      this.tokenPlayers = this.tokenPlayers.filter((player: any) => player._id !== user._id);
+      this.availablePlayers.push(user);
+      this.loadTokens()
+    }
+  }
+
+  async addPlayerToToken(user: any, token_id: string) {
+    const res = await this.tokensService.addPlayerToToken(this.server, {user:user, token: token_id});
+    if(res){  
+      this.selectedPlayer = null
+      this.tokenPlayers.push(user);
+      this.availablePlayers = this.availablePlayers.filter((player: any) => player._id !== user._id);
+      this.loadTokens()
+    }
+  }
+
   // Chat
   loadingChat(data: any) {
     this.chat = [...data.chat];
@@ -414,7 +485,6 @@ export class TabletopComponent implements OnInit, OnDestroy, AfterViewInit {
     else return '';
   }
 
-  
   onTabChange(event: any) {
     if (event.index === 1) {
       this.loadBackgroundHistory();
@@ -459,6 +529,17 @@ export class TabletopComponent implements OnInit, OnDestroy, AfterViewInit {
     this.loadBackgroundHistory();
   }
 
+  openPlayersList(token: any){
+    this.showPlayersListModal = true;
+    this.listTokenPlayers(token);
+  }
+
+  closeTokenPlayersList() {
+    this.showNewTokenModal = false;
+    this.selectedPlayer = null
+    this.tokenPlayers = []
+    this.availablePlayers = []
+  }
 
   async saveToken() {
     if (this.tokenForm.valid && this.selectedImage) {
@@ -467,7 +548,10 @@ export class TabletopComponent implements OnInit, OnDestroy, AfterViewInit {
         image: this.selectedImage,
       };
 
-      const response = await this.tokensService.saveToken(this.server, tokenData);
+      const response = await this.tokensService.saveToken(
+        this.server,
+        tokenData
+      );
       if (response) {
         this.messageService.add({
           severity: 'success',
@@ -540,7 +624,7 @@ export class TabletopComponent implements OnInit, OnDestroy, AfterViewInit {
     if (res) {
       this.loadTokens();
       this.messageService.add({
-        severity:'success',
+        severity: 'success',
         summary: 'Sucesso',
         detail: 'Token deletado com sucesso',
       });
@@ -559,19 +643,22 @@ export class TabletopComponent implements OnInit, OnDestroy, AfterViewInit {
     this.editingBackgroundName = background.name;
     this.showEditBackgroundDialog = true;
   }
-  
+
   saveBackgroundName() {
     if (!this.editingBackgroundName.trim() || !this.editingBackground) {
       return;
     }
-  
+
     const updatedBackground = {
       ...this.editingBackground,
-      name: this.editingBackgroundName
+      name: this.editingBackgroundName,
     };
 
-    this.tableConfigService.updateBackgroundName(this.server, updatedBackground);
-  
+    this.tableConfigService.updateBackgroundName(
+      this.server,
+      updatedBackground
+    );
+
     this.showEditBackgroundDialog = false;
     this.editingBackground = null;
     this.editingBackgroundName = '';
@@ -579,12 +666,14 @@ export class TabletopComponent implements OnInit, OnDestroy, AfterViewInit {
 
   async loadBackgroundHistory() {
     try {
-      const response = await this.tableConfigService.loadBackgroundHistory(this.server);
-      
+      const response = await this.tableConfigService.loadBackgroundHistory(
+        this.server
+      );
+
       if (response) {
         this.backgroundHistory = response.map((bg: any) => ({
           ...bg,
-          addedAt: new Date(bg.addedAt)
+          addedAt: new Date(bg.addedAt),
         }));
       }
     } catch (error) {
@@ -595,92 +684,97 @@ export class TabletopComponent implements OnInit, OnDestroy, AfterViewInit {
       });
     }
   }
-  
+
   async removeBackground() {
-  try {
-    const response = await this.tableConfigService.removeBackground(this.server);
+    try {
+      const response = await this.tableConfigService.removeBackground(
+        this.server
+      );
 
-    if (response) {
-      this.currentBackground = null;
+      if (response) {
+        this.currentBackground = null;
 
-      this.messageService.add({
-        severity: 'success',
-        summary: 'Sucesso',
-        detail: 'Background removido com sucesso',
-      });
-    } else {
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Sucesso',
+          detail: 'Background removido com sucesso',
+        });
+      } else {
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Erro',
+          detail: 'Erro ao remover o background',
+        });
+      }
+    } catch (error) {
       this.messageService.add({
         severity: 'error',
         summary: 'Erro',
         detail: 'Erro ao remover o background',
       });
     }
-  } catch (error) {
-    this.messageService.add({
-      severity: 'error',
-      summary: 'Erro',
-      detail: 'Erro ao remover o background',
-    });
   }
-  }
-  
-  onBackgroundSelect(event: any) {
-  const file = event.files[0];
-  if (file) {
-    if (file.size > 1048576) {
-      this.messageService.add({
-        severity: 'error',
-        summary: 'Erro',
-        detail: 'Arquivo muito grande. Máximo 1MB.',
-      });
-      return;
-    }
 
-    const reader = new FileReader();
-    reader.onload = async (e: any) => {
+  onBackgroundSelect(event: any) {
+    const file = event.files[0];
+    if (file) {
+      if (file.size > 1048576) {
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Erro',
+          detail: 'Arquivo muito grande. Máximo 1MB.',
+        });
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = async (e: any) => {
+        try {
+          this.currentBackground = e.target.result;
+          await this.updateBackground();
+        } catch (error) {
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Erro',
+            detail: 'Erro ao atualizar o background. Tente novamente.',
+          });
+        }
+      };
+      reader.onerror = () => {
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Erro',
+          detail: 'Erro ao ler o arquivo. Tente novamente.',
+        });
+      };
+      reader.readAsDataURL(file);
+    }
+  }
+
+  async updateBackground() {
+    if (this.currentBackground) {
       try {
-        this.currentBackground = e.target.result;
-        await this.updateBackground();
+        const response = await this.tableConfigService.updateBackground(
+          this.server,
+          this.currentBackground
+        );
+
+        if (response) {
+          this.messageService.add({
+            severity: 'success',
+            summary: 'Sucesso',
+            detail: 'Background atualizado com sucesso',
+          });
+        } else {
+          throw new Error('Failed to update background');
+        }
       } catch (error) {
+        this.currentBackground = null;
         this.messageService.add({
           severity: 'error',
           summary: 'Erro',
           detail: 'Erro ao atualizar o background. Tente novamente.',
         });
-      }
-    };
-    reader.onerror = () => {
-      this.messageService.add({
-        severity: 'error',
-        summary: 'Erro',
-        detail: 'Erro ao ler o arquivo. Tente novamente.',
-      });
-    };
-    reader.readAsDataURL(file);
-  }
-  }
-
-  async updateBackground() {
-  if (this.currentBackground) {
-    try {
-      const response = await this.tableConfigService.updateBackground(this.server, this.currentBackground);
-
-      if (response) {
-        this.messageService.add({
-          severity: 'success',
-          summary: 'Sucesso',
-          detail: 'Background atualizado com sucesso',
-        });
-      } else {
-        throw new Error('Failed to update background');
-      }
-    } catch (error) {
-      this.currentBackground = null;
-      this.messageService.add({
-        severity: 'error',
-        summary: 'Erro',
-        detail: 'Erro ao atualizar o background. Tente novamente.',
-      });
       }
     }
   }
@@ -689,6 +783,4 @@ export class TabletopComponent implements OnInit, OnDestroy, AfterViewInit {
     this.currentBackground = backgroundUrl;
     await this.updateBackground();
   }
-
 }
-
