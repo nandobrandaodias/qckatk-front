@@ -14,6 +14,7 @@ export class TokensService {
       name: token.name,
       tokenId: token.id,
       type: token.type,
+      players: token.players,
       label: token.image || '',
       position: {
         row: 0,
@@ -24,14 +25,18 @@ export class TokensService {
       stats: {
         maxhp: token.maxhp ?? 1,
         hp: token.hp ?? 1,
-      },
+      }
     };
 
     server.emit('addToken', { token: newToken });
   }
 
-  dropTokenOnTable(server: any, token: any) {
-    server.emit('dropToken', { tokenId: token.id, position: token.position });
+  async moveToken(server: any, token: any) {
+    const response = await server.timeout(1000).emitWithAck('moveToken', {
+      tokenId: token.id,
+      position: token.position,
+    });
+    return response;
   }
 
   async saveToken(server: any, token: any) {
@@ -39,11 +44,9 @@ export class TokensService {
       const response = await server
         .timeout(500)
         .emitWithAck('createToken', token);
-  
       return response;
-    } 
-    catch (error) {
-      return null
+    } catch (error) {
+      return null;
     }
   }
 
@@ -52,8 +55,14 @@ export class TokensService {
   }
 
   async deleteToken(server: any, token: string) {
-    return await server
-    .timeout(500)
-    .emitWithAck('deleteToken', token);
+    return await server.timeout(500).emitWithAck('deleteToken', token);
+  }
+
+  async removePlayerFromToken(server: any, data: any) {
+    return await server.timeout(500).emitWithAck('removeTokenPermission', data);
+  }
+  
+  async addPlayerToToken(server: any, data: any) {
+    return await server.timeout(500).emitWithAck('addTokenPermission', data);
   }
 }
