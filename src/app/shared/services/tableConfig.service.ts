@@ -42,4 +42,10 @@ export class TableConfigService {
         .timeout(500)
         .emitWithAck('listAllPlayers');
   }
+
+  async listAllPlayersStatus(server: any){
+        return await server
+        .timeout(500)
+        .emitWithAck('listAllPlayersStatus');
+  }
 }

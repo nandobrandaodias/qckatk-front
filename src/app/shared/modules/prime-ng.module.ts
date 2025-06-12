@@ -24,10 +24,9 @@ import { DropdownModule } from 'primeng/dropdown';
 import { FileUploadModule } from 'primeng/fileupload';
 import { TagModule } from 'primeng/tag';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
-import { TabViewModule } from 'primeng/tabview';
 import { MultiSelectModule } from 'primeng/multiselect';
 import { TooltipModule } from 'primeng/tooltip';
-
+import { TabsModule } from 'primeng/tabs';
 
 @NgModule({
   declarations: [],
@@ -57,9 +56,9 @@ import { TooltipModule } from 'primeng/tooltip';
     FileUploadModule,
     TagModule,
     ProgressSpinnerModule,
-    TabViewModule,
     MultiSelectModule,
-    TooltipModule
+    TooltipModule,
+    TabsModule
   ],
   exports: [
     ButtonModule,
@@ -87,9 +86,9 @@ import { TooltipModule } from 'primeng/tooltip';
     FileUploadModule,
     TagModule,
     ProgressSpinnerModule,
-    TabViewModule,
     MultiSelectModule,
-    TooltipModule
+    TooltipModule,
+    TabsModule
   ],
 })
 export class PrimeNgModule {}

@@ -27,4 +27,8 @@ export class WorldsService {
   findByCode(code: string){
     return this.http.get(`${API_URL}/worlds/code/${code}`)
   }
+
+  showWorldInfo(id: string){
+    return this.http.get(`${API_URL}/worlds/${id}`)
+  }
 }
