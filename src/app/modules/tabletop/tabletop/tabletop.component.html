@@ -50,7 +50,7 @@
     </section>
   </aside>
 
-  <div class="zoom-controls" [class.show]="showZoomControls">
+  <div class="zoom-controls">
     <div class="zoom-slider">
       <button class="zoom-btn" (click)="setZoom(zoomLevel - zoomStep)">
         <i class="pi pi-minus"></i>
@@ -78,77 +78,80 @@
   </div>
 
   <div class="board-container">
-    <div
-      class="grid-board"
-      #gridBoard
-      (dragover)="onDragOver($event)"
-      (drop)="dropToken($event)"
-      [style.background-image]="
-        currentBackground ? 'url(' + currentBackground + ')' : 'none'
-      "
-      [style.background-size]="'cover'"
-      [style.background-position]="'center'"
-      [style.transform]="'scale(' + zoomLevel + ')'"
-    >
-      @for (row of gridRows; track $index) {
-      <div class="grid-row">
-        @for (col of gridCols; track $index) {
-        <div
-          class="grid-cell"
-          (click)="selectToken()"
-          [attr.data-row]="row"
-          [attr.data-col]="col"
-          [style.width.px]="cellSize"
-          [style.height.px]="cellSize"
-          (dragover)="onDragOver($event)"
-          (drop)="dropToken($event)"
-        ></div>
-        }
-      </div>
-      } @for (token of tokens; track token.id) {
+  <div class="board-viewport" #boardViewport>
+    <div class="board-content" [style.transform]="'scale(' + zoomLevel + ')'">
       <div
-        class="token"
-        [ngClass]="token.type"
-        [style.top.px]="token.position.y"
-        [style.left.px]="token.position.x"
-        draggable="true"
-        (click)="selectToken(token)"
-        (dragstart)="startDragging($event, token)"
+        class="grid-board"
+        #gridBoard
+        (dragover)="onDragOver($event)"
+        (drop)="dropToken($event)"
+        [style.background-image]="
+          currentBackground ? 'url(' + currentBackground + ')' : 'none'
+        "
+        [style.background-size]="'cover'"
+        [style.background-position]="'center'"
       >
-        <img
-          [src]="token.label || ''"
-          [alt]="token.name"
-          class="w-full h-full"
-        />
-        @if(this.selected_token == token){
-        <div class="absolute top-[-92px] flex justify-center flex-wrap z-10">
-          <div class="flex justify-center w-full">
-            <button
-              class="bg-zinc-100 mx-1 rounded-full hover:bg-zinc-300 cursor-pointer"
-            >
-              <i class="pi pi-eye text-black p-2"></i>
-            </button>
-            @if(user.owner){
-            <button
-              class="bg-zinc-100 mx-1 rounded-full hover:bg-zinc-300 cursor-pointer"
-              (click)="deleteTokenFromBoard(token.id)"
-            >
-              <i class="pi pi-trash text-black p-2"></i>
-            </button>
+          @for (row of gridRows; track $index) {
+          <div class="grid-row">
+            @for (col of gridCols; track $index) {
+            <div
+              class="grid-cell"
+              (click)="selectToken()"
+              [attr.data-row]="row"
+              [attr.data-col]="col"
+              [style.width.px]="cellSize"
+              [style.height.px]="cellSize"
+              (dragover)="onDragOver($event)"
+              (drop)="dropToken($event)"
+            ></div>
             }
           </div>
-          <p class="m-0 text-center font-medium min-w-max mt-1">
-            {{ token.name }}
-          </p>
-          <div class="bg-red-600 rounded-lg w-32">
-            <p class="text-center font-medium text-sm">
-              {{ token.stats.maxhp || 0 }}/{{ token.stats.hp || 0 }}
-            </p>
+          } @for (token of tokens; track token.id) {
+          <div
+            class="token"
+            [ngClass]="token.type"
+            [style.top.px]="token.position.y"
+            [style.left.px]="token.position.x"
+            draggable="true"
+            (click)="selectToken(token)"
+            (dragstart)="startDragging($event, token)"
+          >
+            <img
+              [src]="token.label || ''"
+              [alt]="token.name"
+              class="w-full h-full"
+            />
+            @if(this.selected_token == token){
+            <div class="absolute top-[-92px] flex justify-center flex-wrap z-10">
+              <div class="flex justify-center w-full">
+                <button
+                  class="bg-zinc-100 mx-1 rounded-full hover:bg-zinc-300 cursor-pointer"
+                >
+                  <i class="pi pi-eye text-black p-2"></i>
+                </button>
+                @if(user.owner){
+                <button
+                  class="bg-zinc-100 mx-1 rounded-full hover:bg-zinc-300 cursor-pointer"
+                  (click)="deleteTokenFromBoard(token.id)"
+                >
+                  <i class="pi pi-trash text-black p-2"></i>
+                </button>
+                }
+              </div>
+              <p class="m-0 text-center font-medium min-w-max mt-1">
+                {{ token.name }}
+              </p>
+              <div class="bg-red-600 rounded-lg w-32">
+                <p class="text-center font-medium text-sm">
+                  {{ token.stats.maxhp || 0 }}/{{ token.stats.hp || 0 }}
+                </p>
+              </div>
+            </div>
+            }
           </div>
+          }
         </div>
-        }
       </div>
-      }
     </div>
   </div>
 
@@ -156,14 +159,6 @@
     <div class="tools">
       <button class="h-12 w-full">
         <i class="pi pi-plus"></i>
-      </button>
-      <button
-        class="h-12 w-full"
-        (click)="toggleZoomControls()"
-        pTooltip="Zoom Controls"
-        tooltipPosition="left"
-      >
-        <i class="pi pi-search"></i>
       </button>
       @if(user.owner){
       <button class="h-12 w-full" (click)="openTabletopConfigModal()">

@@ -206,14 +206,23 @@
     <div class="my-4">
       <div class="flex flex-col gap-2">
         <app-label name="type" description="Tipo" [required]="true" />
-        <p-dropdown
-          [options]="tokenTypes"
-          formControlName="type"
-          optionLabel="label"
-          optionValue="value"
-          placeholder="Selecione o tipo"
-          [style]="{ width: '100%' }"
-        ></p-dropdown>
+        <div class="flex flex-row gap-6">
+          @for (tokenType of tokenTypes; track tokenType.value) {
+            <div class="flex items-center">
+              <input
+                type="radio"
+                [id]="tokenType.value"
+                name="type"
+                [value]="tokenType.value"
+                formControlName="type"
+                class="mr-2"
+              />
+              <label [for]="tokenType.value" class="cursor-pointer">
+                {{ tokenType.label }}
+              </label>
+            </div>
+          }
+        </div>
       </div>
     </div>
 

@@ -97,6 +97,38 @@ export class TabletopComponent implements OnInit, OnDestroy, AfterViewInit {
   currentBackground: string | null = null;
   backgroundHistory: BackgroundHistory[] = [];
 
+  @ViewChild('boardViewport') boardViewportRef!: ElementRef;
+  
+  @HostListener('wheel', ['$event'])
+  onMouseWheel(event: WheelEvent) {
+    if (event.ctrlKey || event.metaKey) {
+      event.preventDefault();
+      
+      const viewport = this.boardViewportRef?.nativeElement;
+      if (viewport) {
+        const rect = viewport.getBoundingClientRect();
+        const mouseX = event.clientX - rect.left;
+        const mouseY = event.clientY - rect.top;
+        
+        const scrollX = viewport.scrollLeft + mouseX;
+        const scrollY = viewport.scrollTop + mouseY;
+        
+        const delta = event.deltaY > 0 ? -this.zoomStep : this.zoomStep;
+        const newZoom = Math.max(this.minZoom, Math.min(this.maxZoom, this.zoomLevel + delta));
+        
+        if (newZoom !== this.zoomLevel) {
+          const zoomFactor = newZoom / this.zoomLevel;
+          this.zoomLevel = newZoom;
+          
+          setTimeout(() => {
+            viewport.scrollLeft = scrollX * zoomFactor - mouseX;
+            viewport.scrollTop = scrollY * zoomFactor - mouseY;
+          }, 10);
+        }
+      }
+    }
+  }
+
   @HostListener('document:keydown', ['$event'])
   async keyDownToken(event: KeyboardEvent) {
     const key = event.key;
@@ -145,6 +177,18 @@ export class TabletopComponent implements OnInit, OnDestroy, AfterViewInit {
             this.selected_token = updatedToken;
           }
         }
+      }
+    }
+    if (event.ctrlKey || event.metaKey) {
+      if (event.key === '=' || event.key === '+') {
+        event.preventDefault();
+        this.setZoom(this.zoomLevel + this.zoomStep);
+      } else if (event.key === '-') {
+        event.preventDefault();
+        this.setZoom(this.zoomLevel - this.zoomStep);
+      } else if (event.key === '0') {
+        event.preventDefault();
+        this.resetZoom();
       }
     }
   }
@@ -313,31 +357,45 @@ export class TabletopComponent implements OnInit, OnDestroy, AfterViewInit {
   minZoom: number = 0.5;
   maxZoom: number = 4;
   zoomStep: number = 0.1;
-  showZoomControls: boolean = false;
-
-  toggleZoomControls() {
-    this.showZoomControls = !this.showZoomControls;
-  }
-
-  @HostListener('wheel', ['$event'])
-  onMouseWheel(event: WheelEvent) {
-    if (event.ctrlKey || event.metaKey) {
-      event.preventDefault();
-      const delta = event.deltaY > 0 ? -this.zoomStep : this.zoomStep;
-      this.setZoom(this.zoomLevel + delta);
-    }
-  }
 
   setZoom(newZoomLevel: number) {
     const clampedZoom = Math.max(this.minZoom, Math.min(this.maxZoom, newZoomLevel));
     
     if (clampedZoom !== this.zoomLevel) {
-      this.zoomLevel = clampedZoom;
+      const viewport = this.boardViewportRef?.nativeElement;
+      
+      if (viewport) {
+        const scrollLeftPercent = viewport.scrollLeft / Math.max(1, viewport.scrollWidth - viewport.clientWidth);
+        const scrollTopPercent = viewport.scrollTop / Math.max(1, viewport.scrollHeight - viewport.clientHeight);
+        
+        this.zoomLevel = clampedZoom;
+        
+        setTimeout(() => {
+          const newScrollLeft = scrollLeftPercent * Math.max(0, viewport.scrollWidth - viewport.clientWidth);
+          const newScrollTop = scrollTopPercent * Math.max(0, viewport.scrollHeight - viewport.clientHeight);
+          
+          viewport.scrollLeft = newScrollLeft;
+          viewport.scrollTop = newScrollTop;
+        }, 10);
+      } else {
+        this.zoomLevel = clampedZoom;
+      }
     }
   }
 
   resetZoom() {
     this.zoomLevel = 1;
+    
+    const viewport = this.boardViewportRef?.nativeElement;
+    if (viewport) {
+      setTimeout(() => {
+        const scrollLeft = Math.max(0, (viewport.scrollWidth - viewport.clientWidth) / 2);
+        const scrollTop = Math.max(0, (viewport.scrollHeight - viewport.clientHeight) / 2);
+        
+        viewport.scrollLeft = scrollLeft;
+        viewport.scrollTop = scrollTop;
+      }, 50);
+    }
   }
 
   selectToken(token?: Token) {

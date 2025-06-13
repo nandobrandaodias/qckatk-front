@@ -96,29 +96,66 @@
 
 .board-container {
   flex-grow: 1;
-  padding: 60px;
-  display: flex;
-  justify-content: flex-start;
-  align-items: flex-start;
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  height: 100%;
+}
+
+.board-viewport {
+  width: 100%;
+  height: 100%;
   overflow: auto;
   position: relative;
+  scroll-behavior: smooth;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.3) transparent;
+}
+
+.board-viewport::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.board-viewport::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.board-viewport::-webkit-scrollbar-thumb {
+  background-color: rgba(255, 255, 255, 0.3);
+  border-radius: 4px;
+}
+
+.board-viewport::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(255, 255, 255, 0.5);
+}
+
+.board-content {
+  transform-origin: top left; /* Changed from center center to top left */
+  transition: transform 0.2s ease;
+  width: max-content;
+  height: max-content;
+  /* Generous padding to ensure all content is accessible */
+  padding: 300px;
+  /* Ensure minimum size for proper scrolling */
+  min-width: 100%;
+  min-height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .zoom-controls {
-  position: absolute;
+  position: fixed;
   bottom: 20px;
-  left: 50%;
-  transform: translateX(-50%);
-  background-color: rgba(255, 255, 255, 0.9);
+  right: 20px;
+  background-color: rgba(255, 255, 255, 0.95);
   border-radius: 8px;
   padding: 8px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-  display: none;
-  z-index: 10;
-}
-
-.zoom-controls.show {
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
   display: block;
+  z-index: 1000;
+  backdrop-filter: blur(5px);
 }
 
 .zoom-slider {
@@ -137,6 +174,7 @@
   align-items: center;
   justify-content: center;
   cursor: pointer;
+  transition: background-color 0.2s;
 }
 
 .zoom-btn:hover {
@@ -154,6 +192,7 @@
   justify-content: center;
   cursor: pointer;
   margin-left: 4px;
+  transition: background-color 0.2s;
 }
 
 .zoom-reset:hover {
@@ -161,13 +200,11 @@
 }
 
 .grid-board {
-  transition: transform 0.2s ease;
   position: relative;
   background-color: #2c2c2c;
   width: min-content;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  margin: 100px 50px 50px 100px;
-  transform-origin: 50px 50px;
+  margin: 0; /* Remove any margin */
 }
 
 .grid-row {
